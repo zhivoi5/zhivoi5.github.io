@@ -1,0 +1,25 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import { productCategories } from '../data/catalog.mjs';
+---
+<Base title="Страница не найдена | Текстиль Дизайн" description="Такой страницы на сайте салона штор «Текстиль Дизайн» нет." noindex>
+  <section class="section">
+    <div class="container nf">
+      <p class="label">Ошибка 404</p>
+      <h1>Такой страницы нет</h1>
+      <p class="lead">Возможно, адрес изменился. Начните с главной или выберите раздел каталога.</p>
+      <a class="btn" href="/">На главную <Icon name="arrow" /></a>
+      <ul role="list" class="nf__list">
+        {productCategories.map((c) => <li><a class="link" href={c.path}>{c.title}</a></li>)}
+        <li><a class="link" href="/uslugi/">Услуги</a></li>
+        <li><a class="link" href="/kontakty/">Контакты</a></li>
+      </ul>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .nf { display: grid; gap: var(--space-5); justify-items: start; }
+  .nf__list { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-6); margin-top: var(--space-5); }
+</style>

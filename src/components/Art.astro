@@ -1,0 +1,206 @@
+---
+// Графические иллюстрации разделов в фирменной палитре — не фотографии и не работы салона.
+// Каждая вписана в «арку окна» 3:4 (фирменный приём из MASTER.md).
+interface Props {
+  type: 'hero' | 'drape' | 'sheer' | 'roman' | 'roller' | 'blinds' | 'rod' | 'swatches' | 'decor' | 'needle';
+  class?: string;
+  /** Без арочной маски — прямоугольник (для мелких превью). */
+  plain?: boolean;
+}
+const { type, class: cls, plain = false } = Astro.props;
+const uid = 'art' + Math.random().toString(36).slice(2, 8);
+const id = (s: string) => `${uid}-${s}`;
+const url = (s: string) => `url(#${id(s)})`;
+
+// Горизонтальный градиент складок ткани.
+const folds = (n: number, a: string, b: string) =>
+  Array.from({ length: n * 2 + 1 }, (_, k) => `<stop offset="${(k / (n * 2)).toFixed(3)}" stop-color="${k % 2 ? b : a}"/>`).join('');
+
+const C = {
+  wall: '#EAE3D6', wall2: '#E0D6C4', floor: '#D6CBB7', light: '#FCFAF5', light2: '#EFE7D7',
+  frame: '#CFC4B0', emerald: '#123B2E', emeraldDeep: '#0C2A20', emeraldLight: '#2B6A50',
+  gold: '#C5A66A', goldDark: '#765C2B', graphite: '#292824', linen: '#D5C7AE', linenDark: '#B5A385', ivory: '#F8F4EC',
+};
+const arch = 'M0 400V150A150 150 0 0 1 300 150V400Z';
+---
+<svg
+  class:list={['art', `art--${type}`, cls]}
+  viewBox="0 0 300 400"
+  preserveAspectRatio="xMidYMid slice"
+  aria-hidden="true"
+  focusable="false"
+>
+  <defs>
+    <clipPath id={id('clip')}><path d={plain ? 'M0 0H300V400H0Z' : arch} /></clipPath>
+    <linearGradient id={id('wall')} x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color={C.wall} /><stop offset="1" stop-color={C.wall2} />
+    </linearGradient>
+    <radialGradient id={id('light')} cx="0.5" cy="0.35" r="0.75">
+      <stop offset="0" stop-color={C.light} /><stop offset="1" stop-color={C.light2} />
+    </radialGradient>
+    <linearGradient id={id('velvet')} x1="0" x2="1" set:html={folds(5, C.emeraldDeep, C.emeraldLight)} />
+    <linearGradient id={id('velvetR')} x1="1" x2="0" set:html={folds(5, C.emeraldDeep, C.emeraldLight)} />
+    <linearGradient id={id('tulle')} x1="0" x2="1" set:html={folds(9, '#FFFFFF', '#E9E1D2')} />
+    <linearGradient id={id('linenFold')} x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color={C.linen} /><stop offset="0.7" stop-color={C.linen} /><stop offset="1" stop-color={C.linenDark} />
+    </linearGradient>
+    <linearGradient id={id('slat')} x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F1EADD" /><stop offset="1" stop-color="#C9BCA5" />
+    </linearGradient>
+    <linearGradient id={id('shade')} x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#000" stop-opacity="0" /><stop offset="1" stop-color="#000" stop-opacity="0.08" />
+    </linearGradient>
+  </defs>
+
+  <g clip-path={url('clip')}>
+    <rect width="300" height="400" fill={url('wall')} />
+
+    {type !== 'swatches' && type !== 'decor' && type !== 'needle' && (
+      <g class="art-window">
+        <rect x="62" y="78" width="176" height="262" fill={url('light')} />
+        <path d="M150 78V340M62 196H238" stroke={C.frame} stroke-width="2" />
+        <rect x="62" y="78" width="176" height="262" fill="none" stroke={C.frame} stroke-width="5" />
+        <rect x="52" y="340" width="196" height="8" fill={C.frame} />
+      </g>
+    )}
+    <rect y="372" width="300" height="28" fill={C.floor} opacity="0.7" />
+
+    {type === 'hero' && (
+      <g>
+        <rect x="0" y="34" width="300" height="3" fill={C.graphite} />
+        <rect x="24" y="44" width="252" height="352" fill={url('tulle')} opacity="0.6" />
+        <g class="art-curtain art-curtain--l">
+          <path d="M-30 37H96C94 140 100 300 104 400H-30Z" fill={url('velvet')} />
+          <path d="M-30 37H96V60H-30Z" fill={url('shade')} />
+        </g>
+        <g class="art-curtain art-curtain--r">
+          <path d="M330 37H204C206 140 200 300 196 400H330Z" fill={url('velvetR')} />
+        </g>
+        <circle cx="6" cy="35.5" r="5" fill={C.gold} />
+        <circle cx="294" cy="35.5" r="5" fill={C.gold} />
+      </g>
+    )}
+
+    {type === 'drape' && (
+      <g>
+        <rect x="0" y="36" width="300" height="3" fill={C.graphite} />
+        <rect x="66" y="40" width="168" height="356" fill={url('tulle')} opacity="0.55" />
+        <path d="M0 39H118C112 120 74 200 64 244C82 300 98 350 104 400H0Z" fill={url('velvet')} />
+        <path d="M300 39H182C188 120 226 200 236 244C218 300 202 350 196 400H300Z" fill={url('velvetR')} />
+        <path d="M30 242q34 10 40 0" fill="none" stroke={C.gold} stroke-width="3" stroke-linecap="round" />
+        <path d="M230 242q6 10 40 0" fill="none" stroke={C.gold} stroke-width="3" stroke-linecap="round" />
+      </g>
+    )}
+
+    {type === 'sheer' && (
+      <g>
+        <rect x="0" y="40" width="300" height="2" fill={C.graphite} />
+        <path d="M18 42H282V388q-11 6-22 0t-22 0-22 0-22 0-22 0-22 0-22 0-22 0-22 0-22 0-22 0-22 0Z" fill={url('tulle')} opacity="0.72" />
+        <path d="M18 42H282V388q-11 6-22 0t-22 0-22 0-22 0-22 0-22 0-22 0-22 0-22 0-22 0-22 0-22 0Z" fill="none" stroke="#FFFFFF" stroke-opacity="0.6" />
+      </g>
+    )}
+
+    {type === 'roman' && (
+      <g>
+        <rect x="56" y="72" width="188" height="8" rx="1" fill={C.graphite} opacity="0.85" />
+        {[0, 1, 2, 3, 4].map((k) => (
+          <rect x="58" y={80 + k * 24} width="184" height="34" rx="12" fill={url('linenFold')} />
+        ))}
+        <rect x="58" y="200" width="184" height="6" rx="1" fill={C.linenDark} />
+        <path d="M100 80V200M200 80V200" stroke={C.goldDark} stroke-opacity="0.35" stroke-dasharray="2 4" />
+      </g>
+    )}
+
+    {type === 'roller' && (
+      <g>
+        <rect x="54" y="66" width="192" height="16" rx="8" fill="#8C8577" />
+        {Array.from({ length: 9 }, (_, k) => (
+          <rect x="62" y={82 + k * 18} width="176" height="18" fill={k % 2 ? '#CFC3AE' : '#E9E1D2'} opacity={k % 2 ? 1 : 0.45} />
+        ))}
+        <rect x="60" y="244" width="180" height="6" rx="2" fill={C.graphite} opacity="0.85" />
+        <path d="M232 82V300" stroke={C.graphite} stroke-opacity="0.4" stroke-dasharray="1 3" />
+      </g>
+    )}
+
+    {type === 'blinds' && (
+      <g>
+        <rect x="56" y="70" width="188" height="10" rx="2" fill={C.graphite} opacity="0.85" />
+        {Array.from({ length: 21 }, (_, k) => (
+          <rect x="62" y={84 + k * 12} width="176" height="8" rx="2" fill={url('slat')} />
+        ))}
+        <path d="M100 80V336M200 80V336" stroke={C.graphite} stroke-opacity="0.25" />
+        <path d="M228 80V250" stroke={C.goldDark} stroke-width="1.5" />
+        <circle cx="228" cy="254" r="4" fill={C.gold} />
+      </g>
+    )}
+
+    {type === 'rod' && (
+      <g>
+        <rect x="0" y="0" width="300" height="22" fill="#F3EEE4" />
+        <rect x="20" y="52" width="270" height="5" rx="2.5" fill={C.graphite} />
+        <circle cx="16" cy="54.5" r="8" fill={C.gold} />
+        <rect x="70" y="22" width="4" height="32" fill={C.graphite} opacity="0.7" />
+        <rect x="236" y="22" width="4" height="32" fill={C.graphite} opacity="0.7" />
+        {[0, 1, 2, 3, 4, 5, 6].map((k) => (
+          <circle cx={38 + k * 18} cy="54.5" r="7" fill="none" stroke={C.goldDark} stroke-width="2" />
+        ))}
+        <path d="M30 60H156C152 180 150 300 152 400H30Z" fill={url('velvet')} />
+        <rect x="20" y="70" width="270" height="2" fill={C.graphite} opacity="0.35" />
+      </g>
+    )}
+
+    {type === 'swatches' && (
+      <g>
+        {[
+          { a: -26, f: C.linen },
+          { a: -13, f: '#B9AE9B' },
+          { a: 0, f: C.gold },
+          { a: 13, f: C.graphite },
+          { a: 26, f: url('velvet') },
+        ].map((s) => (
+          <g transform={`rotate(${s.a} 150 330)`}>
+            <rect x="104" y="96" width="92" height="232" rx="6" fill={s.f} />
+            <path d="M112 108H188" stroke="#FFFFFF" stroke-opacity="0.45" stroke-dasharray="3 3" />
+          </g>
+        ))}
+        <circle cx="150" cy="306" r="7" fill={C.ivory} stroke={C.goldDark} stroke-width="2" />
+      </g>
+    )}
+
+    {type === 'decor' && (
+      <g>
+        <rect x="20" y="230" width="260" height="110" rx="14" fill="#CDBFA7" />
+        <rect x="10" y="300" width="280" height="62" rx="12" fill="#BFB096" />
+        <rect x="44" y="214" width="96" height="96" rx="18" fill={url('velvet')} transform="rotate(-6 92 262)" />
+        <rect x="150" y="222" width="90" height="90" rx="16" fill={C.ivory} transform="rotate(5 195 267)" />
+        <path d="M160 232l70 70M230 232l-70 70" stroke={C.gold} stroke-opacity="0.5" />
+        <path d="M232 90V150" stroke={C.goldDark} stroke-width="2" />
+        <circle cx="232" cy="154" r="7" fill={C.gold} />
+        <path d="M226 160l-4 44M232 161v46M238 160l4 44M229 161l-2 45M235 161l2 45" stroke={C.gold} stroke-width="2" stroke-linecap="round" />
+      </g>
+    )}
+
+    {type === 'needle' && (
+      <g fill="none" stroke-linecap="round">
+        <rect x="0" y="0" width="300" height="400" fill={C.ivory} stroke="none" />
+        <path d="M0 40H300M0 80H300M0 120H300M0 160H300M0 200H300M0 240H300M0 280H300M0 320H300M0 360H300M40 0V400M80 0V400M120 0V400M160 0V400M200 0V400M240 0V400M280 0V400" stroke={C.frame} stroke-opacity="0.45" stroke-width="0.75" />
+        <rect x="80" y="120" width="140" height="200" stroke={C.emerald} stroke-width="1.75" />
+        <path d="M150 120V320M80 220H220" stroke={C.emerald} stroke-width="1" />
+        <path d="M60 104H240" stroke={C.graphite} stroke-width="2" />
+        <path d="M64 108C70 180 66 260 72 340M78 108C82 200 80 280 86 340M222 108C218 200 220 280 214 340M236 108C230 180 234 260 228 340" stroke={C.emerald} stroke-width="1.5" />
+        <path d="M80 92H220M80 86V98M220 86V98" stroke={C.goldDark} stroke-width="1.5" />
+        <path d="M246 120V320M240 120H252M240 320H252" stroke={C.goldDark} stroke-width="1.5" />
+        <circle cx="150" cy="92" r="3" fill={C.gold} stroke="none" />
+        <circle cx="246" cy="220" r="3" fill={C.gold} stroke="none" />
+      </g>
+    )}
+  </g>
+  {!plain && <path d={arch} fill="none" stroke={C.gold} stroke-opacity="0.55" stroke-width="1" vector-effect="non-scaling-stroke" />}
+</svg>
+
+<style>
+  .art { width: 100%; height: auto; aspect-ratio: 3 / 4; }
+  .art-curtain { transition: transform var(--dur-hero) var(--ease-fabric); }
+  :global(.js) .art--hero:not(.is-open) .art-curtain--l { transform: translateX(58px); }
+  :global(.js) .art--hero:not(.is-open) .art-curtain--r { transform: translateX(-58px); }
+</style>

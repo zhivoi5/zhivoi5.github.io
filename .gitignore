@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.astro/
+.DS_Store
+src/assets/brand/monogram-mask.png
+
+# локальные секреты и окружение
+.env
+.env.*
+!.env.example
+*.local
+*.pem
+*.key
+
+# логи
+npm-debug.log*

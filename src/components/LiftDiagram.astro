@@ -1,0 +1,79 @@
+---
+// Схема лифт-системы: карниз вместе со шторами опускается на тросах.
+// Кнопка переключает положение на схеме (поднят / опущен).
+interface Props { dark?: boolean }
+const { dark = true } = Astro.props;
+const uid = 'lift' + Math.random().toString(36).slice(2, 8);
+const line = dark ? '#C5A66A' : '#765C2B';
+const ink = dark ? '#F5F1E9' : '#292824';
+---
+<figure class:list={['lift', { 'lift--light': !dark }]} data-lift>
+  <svg viewBox="0 0 320 420" role="img" aria-labelledby={`${uid}-t`}>
+    <title id={`${uid}-t`}>Схема: карниз со шторами опускается на тросах от высокого потолка вниз</title>
+    <defs>
+      <linearGradient id={`${uid}-v`} x1="0" x2="1">
+        {Array.from({ length: 9 }, (_, k) => <stop offset={k / 8} stop-color={k % 2 ? '#2B6A50' : '#0C2A20'} />)}
+      </linearGradient>
+    </defs>
+    <!-- потолок и пол -->
+    <path d="M10 22H310M10 404H310" stroke={ink} stroke-opacity="0.5" stroke-width="1.5" />
+    <!-- окно в два света -->
+    <rect x="96" y="70" width="128" height="320" fill="none" stroke={ink} stroke-opacity="0.25" />
+    <path d="M160 70V390M96 230H224" stroke={ink} stroke-opacity="0.15" />
+    <!-- механизмы на потолке -->
+    <rect x="52" y="22" width="20" height="10" fill={line} />
+    <rect x="248" y="22" width="20" height="10" fill={line} />
+    <!-- тросы -->
+    <rect class="lift-cable" x="61.25" y="32" width="1.5" height="24" fill={line} />
+    <rect class="lift-cable" x="257.25" y="32" width="1.5" height="24" fill={line} />
+    <!-- карниз со шторами -->
+    <g class="lift-load">
+      <rect x="40" y="56" width="240" height="5" rx="2.5" fill={ink} />
+      <g class="lift-fabric">
+        <path d="M44 61H112V388H44Z" fill={`url(#${uid}-v)`} />
+        <path d="M208 61H276V388H208Z" fill={`url(#${uid}-v)`} />
+      </g>
+    </g>
+    <!-- человек для масштаба -->
+    <g fill={ink} fill-opacity="0.35">
+      <circle cx="292" cy="312" r="9" />
+      <path d="M282 326h20l4 44h-6l-2 34h-6l-2-30-2 30h-6l-2-34h-6z" />
+    </g>
+    <!-- стрелка направления -->
+    <path class="lift-arrow" d="M160 120V180M150 170l10 12 10-12" fill="none" stroke={line} stroke-width="1.5" />
+  </svg>
+  <figcaption>
+    <button class="btn btn--accent lift-toggle" type="button" aria-pressed="false">
+      <span class="lift-toggle__down">Опустить карниз на схеме</span>
+      <span class="lift-toggle__up">Поднять карниз на схеме</span>
+    </button>
+  </figcaption>
+</figure>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-lift]').forEach((fig) => {
+    const btn = fig.querySelector('button')!;
+    btn.addEventListener('click', () => {
+      const down = fig.classList.toggle('is-down');
+      btn.setAttribute('aria-pressed', String(down));
+    });
+  });
+</script>
+
+<style>
+  .lift { display: grid; gap: var(--space-5); justify-items: center; }
+  .lift svg { width: 100%; max-width: 22rem; height: auto; overflow: visible; }
+  .lift-load { transition: transform 1.6s var(--ease-fabric); }
+  .lift-cable { transform-box: fill-box; transform-origin: top; transition: transform 1.6s var(--ease-fabric); }
+  .lift-arrow { transition: opacity var(--dur-base) var(--ease-out); }
+  .lift-fabric { transform-box: fill-box; transform-origin: top; transition: transform 1.6s var(--ease-fabric); }
+  /* Карниз опускается на 240 ед. до высоты руки; ткань складывается к полу. */
+  .lift.is-down .lift-load { transform: translateY(240px); }
+  .lift.is-down .lift-fabric { transform: scaleY(0.315); }
+  .lift.is-down .lift-cable { transform: scaleY(11); }
+  .lift.is-down .lift-arrow { opacity: 0; }
+  .lift-toggle__up { display: none; }
+  .lift.is-down .lift-toggle__up { display: inline; }
+  .lift.is-down .lift-toggle__down { display: none; }
+  .lift--light .lift-toggle { --btn-bg: var(--color-primary); --btn-fg: var(--color-on-primary); --btn-bg-hover: var(--color-primary-hover); }
+</style>

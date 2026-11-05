@@ -1,0 +1,40 @@
+---
+// Нижняя панель связи на телефоне: звонок и маршрут. Прячется, когда на экране блок контактов.
+import Icon from './Icon.astro';
+import { salon } from '../data/site.mjs';
+const main = salon.phones[0];
+---
+<div class="mobile-bar" data-mobile-bar>
+  <a class="btn" href={`tel:${main.tel}`}><Icon name="phone" /> Позвонить</a>
+  <a class="btn btn--ghost" href={salon.maps.yandex} target="_blank" rel="noopener"><Icon name="route" /> Маршрут</a>
+</div>
+
+<script>
+  const bar = document.querySelector<HTMLElement>('[data-mobile-bar]')!;
+  const targets = document.querySelectorAll('[data-hide-bar]');
+  if (targets.length && 'IntersectionObserver' in window) {
+    const visible = new Set<Element>();
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => (e.isIntersecting ? visible.add(e.target) : visible.delete(e.target)));
+      bar.classList.toggle('is-hidden', visible.size > 0);
+    });
+    targets.forEach((t) => io.observe(t));
+  }
+</script>
+
+<style>
+  .mobile-bar {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: var(--z-bar);
+    display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2);
+    padding: var(--space-2) var(--gutter) calc(var(--space-2) + env(safe-area-inset-bottom));
+    background: rgb(245 241 233 / 0.97);
+    border-top: 1px solid var(--color-line);
+    transition: transform var(--dur-base) var(--ease-out);
+  }
+  .mobile-bar .btn { min-height: 3rem; padding-inline: 1rem; }
+  .mobile-bar .btn--ghost { color: var(--color-primary); }
+  .mobile-bar.is-hidden { transform: translateY(110%); }
+  @media (min-width: 768px) { .mobile-bar { display: none; } }
+  :global(body) { --bar-space: calc(4rem + env(safe-area-inset-bottom)); }
+  @media (min-width: 768px) { :global(body) { --bar-space: 0px; } }
+</style>

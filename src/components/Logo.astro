@@ -1,0 +1,28 @@
+---
+// Фирменный знак салона: монограмма «ТД» (очищенная с оригинала) + название.
+interface Props { tone?: 'emerald' | 'gold' | 'ivory'; href?: string | null; size?: 'md' | 'lg' }
+const { tone = 'emerald', href = '/', size = 'md' } = Astro.props;
+const Tag = href ? 'a' : 'span';
+---
+<Tag class:list={['logo', `logo--${tone}`, `logo--${size}`]} href={href ?? undefined} aria-label={href ? 'Текстиль Дизайн — на главную' : undefined}>
+  <img src={`/brand/monogram-${tone === 'emerald' ? 'emerald' : 'gold'}.svg`} alt="" width="56" height="50" decoding="async" />
+  <span class="logo__text">
+    <span class="logo__name">Текстиль Дизайн</span>
+    <span class="logo__kind">салон штор и дизайна</span>
+  </span>
+</Tag>
+
+<style>
+  .logo { flex: none; display: inline-flex; align-items: center; gap: 0.75rem; text-decoration: none; color: var(--color-text); min-height: 44px; }
+  .logo img { width: 2.75rem; height: auto; flex: none; }
+  .logo__text { display: grid; line-height: 1; white-space: nowrap; }
+  .logo__name { font-family: var(--font-display); font-size: 1.375rem; font-weight: 600; letter-spacing: 0.01em; }
+  .logo__kind { margin-top: 0.3rem; font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-text-muted); }
+  .logo--gold, .logo--ivory { color: var(--color-text-on-dark); }
+  .logo--gold .logo__kind, .logo--ivory .logo__kind { color: var(--color-accent-on-dark); }
+  .logo--lg img { width: 4rem; }
+  .logo--lg .logo__name { font-size: 1.75rem; }
+  @media (max-width: 389px) { .logo { gap: 0.55rem; } .logo img { width: 2.4rem; } .logo__name { font-size: 1.25rem; } .logo__kind { font-size: 0.625rem; letter-spacing: 0.08em; } }
+  @media (max-width: 359px) { .logo__kind { display: none; } }
+  @media (min-width: 1024px) { .logo img { width: 3.25rem; } .logo__name { font-size: 1.5rem; } }
+</style>

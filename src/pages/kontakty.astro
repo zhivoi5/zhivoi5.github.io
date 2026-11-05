@@ -1,0 +1,21 @@
+---
+import Base from '../layouts/Base.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import Contacts from '../components/Contacts.astro';
+import { breadcrumbs } from '../data/schema.mjs';
+import { salon } from '../data/site.mjs';
+
+const trail = [{ name: 'Главная', path: '/' }, { name: 'Контакты', path: '/kontakty/' }];
+---
+<Base
+  title="Контакты салона штор «Текстиль Дизайн» — Коммунарка, проспект Куприна, 11к2"
+  description={`Салон штор «Текстиль Дизайн»: ${salon.address.city}, ${salon.address.district}, ${salon.address.street}. ${salon.hours.text}. Тел. ${salon.phones.map((p) => p.display).join(', ')}.`}
+  jsonLd={[breadcrumbs(trail)]}
+>
+  <div class="container kp-crumbs"><Breadcrumbs trail={trail} /></div>
+  <Contacts headingLevel="h1" title="Контакты салона «Текстиль Дизайн»" id="salon" />
+</Base>
+
+<style>
+  .kp-crumbs { padding-block: var(--space-2); }
+</style>

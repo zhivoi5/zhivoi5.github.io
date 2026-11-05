@@ -1,0 +1,227 @@
+---
+import Logo from './Logo.astro';
+import Icon from './Icon.astro';
+import { productCategories, categoryBySlug } from '../data/catalog.mjs';
+import { salon } from '../data/site.mjs';
+
+const path = Astro.url.pathname;
+const main = salon.phones[0];
+const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+const catalogActive = productCategories.some((c) => path.startsWith(c.path));
+const services = categoryBySlug['uslugi'];
+---
+<header class="site-header" data-header>
+  <div class="container site-header__row">
+    <Logo />
+
+    <nav class="nav-desktop" aria-label="Основная навигация">
+      <ul role="list">
+        <li class="nav-desktop__catalog">
+          <button type="button" class:list={['nav-link', { 'is-active': catalogActive }]} aria-expanded="false" aria-controls="catalog-panel" data-catalog-toggle>
+            Каталог <Icon name="chevron" size={16} class="nav-link__chev" />
+          </button>
+          <div class="catalog-panel" id="catalog-panel" hidden data-catalog-panel>
+            <ul role="list" class="catalog-panel__list">
+              {productCategories.map((c) => (
+                <li>
+                  <a href={c.path} aria-current={isActive(c.path) ? 'page' : undefined}>
+                    <span class="catalog-panel__title">{c.title}</span>
+                    <span class="catalog-panel__short">{c.short}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+            <a class="catalog-panel__feature" href="/karnizy/lift-sistemy/">
+              <span class="label">Отдельно</span>
+              <span class="catalog-panel__title">Лифт-системы для штор</span>
+              <span class="catalog-panel__short">Шторы опускаются вместе с карнизом — для высоких потолков.</span>
+            </a>
+          </div>
+        </li>
+        <li><a class:list={['nav-link', { 'is-active': isActive(services.path) }]} href={services.path} aria-current={path === services.path ? 'page' : undefined}>Услуги</a></li>
+        <li><a class:list={['nav-link', { 'is-active': isActive('/karnizy/lift-sistemy/') }]} href="/karnizy/lift-sistemy/">Лифт-системы</a></li>
+        <li><a class:list={['nav-link', { 'is-active': isActive('/kontakty/') }]} href="/kontakty/" aria-current={path === '/kontakty/' ? 'page' : undefined}>Контакты</a></li>
+      </ul>
+    </nav>
+
+    <div class="site-header__actions">
+      <a class="header-phone tnum" href={`tel:${main.tel}`}>{main.display}</a>
+      <a class="icon-btn header-call" href={`tel:${main.tel}`} aria-label={`Позвонить: ${main.display}`}><Icon name="phone" /></a>
+      <button class="icon-btn header-menu" type="button" aria-label="Открыть меню" aria-haspopup="dialog" aria-controls="mobile-menu" data-menu-open>
+        <Icon name="menu" />
+      </button>
+    </div>
+  </div>
+</header>
+
+<dialog class="mobile-menu on-dark" id="mobile-menu" aria-label="Меню" data-menu>
+  <div class="mobile-menu__inner">
+    <div class="mobile-menu__top">
+      <Logo tone="gold" />
+      <button class="icon-btn" type="button" aria-label="Закрыть меню" autofocus data-menu-close><Icon name="close" /></button>
+    </div>
+    <nav aria-label="Меню сайта">
+      <p class="label">Каталог</p>
+      <ul role="list" class="mobile-menu__list">
+        {productCategories.map((c, i) => (
+          <li style={`--i:${i}`}><a href={c.path} aria-current={isActive(c.path) ? 'page' : undefined}>{c.title}</a></li>
+        ))}
+      </ul>
+      <ul role="list" class="mobile-menu__list mobile-menu__list--sub">
+        <li><a href="/karnizy/lift-sistemy/">Лифт-системы для штор</a></li>
+        <li><a href="/uslugi/">Услуги</a></li>
+        <li><a href="/uslugi/vyezd-dizajnera/">Выезд дизайнера на замер</a></li>
+        <li><a href="/kontakty/">Контакты</a></li>
+      </ul>
+    </nav>
+    <div class="mobile-menu__contacts">
+      {salon.phones.map((p) => (
+        <a class="mobile-menu__phone" href={`tel:${p.tel}`}>
+          <span class="tnum">{p.display}</span>
+          <span class="small">{p.label}</span>
+        </a>
+      ))}
+      <p class="small muted">{salon.hours.text} · {salon.address.street}</p>
+    </div>
+  </div>
+</dialog>
+
+<script>
+  const header = document.querySelector<HTMLElement>('[data-header]')!;
+  const onScroll = () => header.classList.toggle('is-scrolled', window.scrollY > 8);
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  // Выпадающий каталог (десктоп)
+  const toggle = document.querySelector<HTMLButtonElement>('[data-catalog-toggle]')!;
+  const panel = document.querySelector<HTMLElement>('[data-catalog-panel]')!;
+  const setOpen = (open: boolean) => {
+    toggle.setAttribute('aria-expanded', String(open));
+    panel.hidden = !open;
+  };
+  toggle.addEventListener('click', () => setOpen(panel.hidden));
+  document.addEventListener('click', (e) => {
+    if (!panel.hidden && !(e.target as Element).closest('.nav-desktop__catalog')) setOpen(false);
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !panel.hidden) { setOpen(false); toggle.focus(); }
+  });
+  panel.addEventListener('focusout', (e) => {
+    if (!panel.contains(e.relatedTarget as Node) && e.relatedTarget !== toggle) setOpen(false);
+  });
+
+  // Мобильное меню на <dialog>: фокус и Esc обрабатывает браузер
+  const menu = document.querySelector<HTMLDialogElement>('[data-menu]')!;
+  document.querySelector('[data-menu-open]')!.addEventListener('click', () => {
+    menu.showModal();
+    document.documentElement.classList.add('menu-open');
+  });
+  const close = () => menu.close();
+  document.querySelector('[data-menu-close]')!.addEventListener('click', close);
+  menu.addEventListener('close', () => document.documentElement.classList.remove('menu-open'));
+  menu.querySelectorAll('a[href^="/"]').forEach((a) => a.addEventListener('click', close));
+  const mq = window.matchMedia('(min-width: 1024px)');
+  mq.addEventListener('change', () => mq.matches && menu.open && close());
+</script>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-header);
+    background: rgb(245 241 233 / 0.94);
+    border-bottom: 1px solid transparent;
+    transition: border-color var(--dur-base) var(--ease-out), background-color var(--dur-base) var(--ease-out);
+    padding-top: env(safe-area-inset-top);
+  }
+  .site-header.is-scrolled { border-bottom-color: var(--color-line); background: rgb(245 241 233 / 0.98); }
+  .site-header__row { display: flex; align-items: center; justify-content: space-between; gap: var(--space-5); min-height: var(--header-h); }
+
+  .nav-desktop { display: none; }
+  .nav-desktop > ul { display: flex; gap: var(--space-2); align-items: center; }
+  .nav-link {
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    min-height: 44px; padding: 0 0.85rem;
+    background: none; border: 0; cursor: pointer;
+    font-size: 0.9375rem; font-weight: 500; text-decoration: none; color: var(--color-text);
+    background-image: linear-gradient(var(--color-hairline-gold), var(--color-hairline-gold));
+    background-repeat: no-repeat; background-position: 0.85rem calc(100% - 8px); background-size: 0 1px;
+    transition: background-size var(--dur-base) var(--ease-out), color var(--dur-fast);
+  }
+  .nav-link:hover, .nav-link.is-active, .nav-link[aria-expanded='true'] { background-size: calc(100% - 1.7rem) 1px; color: var(--color-primary); }
+  .nav-link :global(.nav-link__chev) { transform: rotate(90deg); transition: transform var(--dur-base) var(--ease-out); }
+  .nav-link[aria-expanded='true'] :global(.nav-link__chev) { transform: rotate(-90deg); }
+
+  .nav-desktop__catalog { position: relative; }
+  .catalog-panel {
+    position: absolute; top: calc(100% + 0.75rem); left: -1rem;
+    width: min(52rem, 80vw);
+    display: grid; grid-template-columns: 2fr 1fr; gap: var(--space-5);
+    padding: var(--space-5);
+    background: var(--color-surface); border: 1px solid var(--color-line); border-radius: var(--radius-md);
+    box-shadow: var(--shadow-2);
+    animation: panel-in var(--dur-base) var(--ease-out);
+  }
+  .catalog-panel[hidden] { display: none; }
+  @keyframes panel-in { from { opacity: 0; transform: translateY(-6px); } }
+  .catalog-panel__list { display: grid; grid-template-columns: 1fr 1fr; gap: 0.25rem var(--space-4); }
+  .catalog-panel a { display: grid; gap: 0.2rem; padding: 0.75rem; border-radius: var(--radius-sm); text-decoration: none; transition: background-color var(--dur-fast); }
+  .catalog-panel a:hover, .catalog-panel a[aria-current='page'] { background: var(--color-bg); }
+  .catalog-panel__title { font-weight: 600; font-size: 0.9375rem; color: var(--color-text); }
+  .catalog-panel__short { font-size: 0.8125rem; line-height: 1.45; color: var(--color-text-muted); }
+  .catalog-panel__feature { background: var(--color-bg); align-content: start; gap: 0.5rem !important; padding: var(--space-5) !important; border-left: 1px solid var(--color-hairline-gold); border-radius: 0 var(--radius-sm) var(--radius-sm) 0 !important; }
+
+  .site-header__actions { display: flex; align-items: center; gap: var(--space-1); margin-right: -0.5rem; }
+  @media (min-width: 1024px) { .site-header__actions { margin-right: 0; gap: var(--space-2); } }
+  /* На самых узких экранах звонок остаётся в нижней панели */
+  @media (max-width: 359px) { .icon-btn.header-call { display: none; } }
+  .header-phone { display: none; font-weight: 600; text-decoration: none; padding: 0.5rem 0; font-size: 0.9375rem; }
+  .header-phone:hover { color: var(--color-primary); }
+  .icon-btn {
+    display: inline-grid; place-items: center;
+    width: 48px; height: 48px;
+    background: none; border: 0; border-radius: var(--radius-sm); cursor: pointer; color: inherit;
+    transition: background-color var(--dur-fast);
+  }
+  .icon-btn:hover { background: rgb(18 59 46 / 0.06); }
+  .on-dark .icon-btn:hover { background: rgb(245 241 233 / 0.08); }
+
+  @media (min-width: 1024px) {
+    .nav-desktop { display: block; }
+    .header-phone { display: inline-block; }
+    .header-call, .header-menu { display: none; }
+  }
+
+  /* Мобильное меню — изумрудная «штора», опускается сверху */
+  .mobile-menu {
+    position: fixed; inset: 0;
+    width: 100%; max-width: none; height: 100dvh; max-height: none;
+    margin: 0; padding: 0; border: 0;
+    background: var(--color-surface-dark);
+    overflow-y: auto; overscroll-behavior: contain;
+  }
+  .mobile-menu::backdrop { background: rgb(12 42 32 / 0.5); }
+  .mobile-menu[open] { animation: curtain-down var(--dur-slow) var(--ease-fabric); }
+  @keyframes curtain-down { from { transform: translateY(-100%); } }
+  .mobile-menu__inner {
+    display: grid; gap: var(--space-6); align-content: start;
+    min-height: 100%;
+    padding: calc(env(safe-area-inset-top) + 0.5rem) var(--gutter) calc(env(safe-area-inset-bottom) + var(--space-7));
+  }
+  .mobile-menu__top { display: flex; justify-content: space-between; align-items: center; min-height: var(--header-h); }
+  .mobile-menu__list { display: grid; margin-top: var(--space-3); }
+  .mobile-menu__list a {
+    display: block; padding: 0.55rem 0;
+    font-family: var(--font-display); font-size: 1.875rem; font-weight: 500; line-height: 1.15;
+    text-decoration: none; color: var(--color-text-on-dark);
+  }
+  .mobile-menu__list a[aria-current='page'] { color: var(--color-accent-on-dark); }
+  .mobile-menu[open] .mobile-menu__list li { animation: item-in var(--dur-slow) var(--ease-out) both; animation-delay: calc(120ms + var(--i, 0) * 40ms); }
+  @keyframes item-in { from { opacity: 0; transform: translateY(8px); } }
+  .mobile-menu__list--sub { border-top: 1px solid var(--color-line-on-dark); padding-top: var(--space-3); }
+  .mobile-menu__list--sub a { font-family: var(--font-body); font-size: 1.0625rem; font-weight: 500; padding: 0.7rem 0; }
+  .mobile-menu__contacts { display: grid; gap: var(--space-3); border-top: 1px solid var(--color-line-on-dark); padding-top: var(--space-5); }
+  .mobile-menu__phone { display: grid; gap: 0.1rem; text-decoration: none; padding: 0.4rem 0; font-size: 1.25rem; font-weight: 600; }
+  .mobile-menu__phone .small { font-weight: 400; color: var(--color-accent-on-dark); }
+  :global(html.menu-open) { overflow: hidden; }
+</style>

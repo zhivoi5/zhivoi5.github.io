@@ -1,0 +1,21 @@
+---
+interface Props { trail: { name: string; path: string }[] }
+const { trail } = Astro.props;
+---
+<nav class="crumbs small" aria-label="Хлебные крошки">
+  <ol role="list">
+    {trail.map((t, i) => (
+      <li>
+        {i < trail.length - 1 ? <a href={t.path}>{t.name}</a> : <span aria-current="page">{t.name}</span>}
+      </li>
+    ))}
+  </ol>
+</nav>
+
+<style>
+  .crumbs ol { display: flex; flex-wrap: wrap; gap: 0.25rem 0.5rem; color: var(--color-text-muted); }
+  .crumbs li { display: inline-flex; align-items: center; gap: 0.5rem; }
+  .crumbs li + li::before { content: '/'; color: var(--color-line-strong); }
+  .crumbs a { text-decoration: none; padding-block: 0.6rem; }
+  .crumbs a:hover { color: var(--color-primary); text-decoration: underline; text-underline-offset: 3px; }
+</style>
