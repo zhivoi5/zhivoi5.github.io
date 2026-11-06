@@ -6,7 +6,7 @@ const dist = new URL('../dist/', import.meta.url).pathname;
 const pages = new Map();
 const walk = (d) => readdirSync(d).forEach((f) => {
   const p = join(d, f);
-  if (statSync(p).isDirectory()) walk(p);
+  if (statSync(p).isDirectory()) { if (f !== 'admin') walk(p); }
   else if (p.endsWith('.html')) pages.set('/' + p.slice(dist.length).replace(/index\.html$/, '').replace(/\.html$/, '/'), readFileSync(p, 'utf8'));
 });
 walk(dist);

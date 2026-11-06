@@ -1,0 +1,369 @@
+# Sveltia CMS — управление контентом сайта «Текстиль Дизайн».
+# Все правки сохраняются коммитами в репозиторий; после коммита сайт пересобирается сам.
+# Перед публикацией заполнить repo и base_url (см. docs/CMS.md).
+
+backend:
+  name: github
+  repo: OWNER/REPO # заполнить: репозиторий сайта на GitHub
+  branch: main
+  base_url: https://AUTH-WORKER.example.workers.dev # заполнить: адрес Sveltia CMS Authenticator (Cloudflare Workers)
+  auth_methods: [oauth] # вход только через GitHub OAuth — личные токены отключены
+  commit_messages:
+    create: 'CMS: добавлено «{{slug}}» ({{collection}})'
+    update: 'CMS: изменено «{{slug}}» ({{collection}})'
+    delete: 'CMS: удалено «{{slug}}» ({{collection}})'
+    uploadMedia: 'CMS: загружено фото {{path}}'
+    deleteMedia: 'CMS: удалено фото {{path}}'
+
+locale: ru
+
+media_folder: /src/assets/media
+public_folder: /src/assets/media
+media_libraries:
+  default:
+    config:
+      slugify_filename: true
+      # Фото с телефона уменьшаются до 2400 px ещё до загрузки; финальные размеры делает сборка сайта
+      transformations:
+        raster_image:
+          format: webp
+          quality: 85
+          width: 2400
+          height: 2400
+
+collections:
+  # ---------- Наши работы ----------
+  - name: works
+    label: Наши работы
+    label_singular: Работа
+    description: Только реальные фотографии выполненных заказов. Иллюстрации и сгенерированные изображения сюда не добавлять.
+    folder: src/content/works
+    extension: md
+    format: frontmatter
+    create: true
+    delete: true
+    slug: '{{year}}-{{month}}-{{day}}-{{hour}}{{minute}}'
+    media_folder: /src/assets/works
+    public_folder: /src/assets/works
+    sortable_fields: [date, title]
+    summary: '{{title}} — {{date}}'
+    fields:
+      - { label: Название, name: title, widget: string, hint: 'Например: «Гостиная с изумрудными портьерами»' }
+      - { label: Дата, name: date, widget: datetime, time_format: false, date_format: 'DD.MM.YYYY' }
+      - { label: Где, name: place, widget: string, required: false, hint: 'Например: «Квартира в Коммунарке». Без адресов и имён клиентов.' }
+      - { label: Описание, name: summary, widget: text, required: false }
+      - label: Фотографии
+        name: photos
+        widget: list
+        min: 1
+        summary: '{{fields.alt}}'
+        fields:
+          - { label: Фото, name: image, widget: image }
+          - { label: Что на фото (для слабовидящих и поисковиков), name: alt, widget: string }
+          - { label: Подпись, name: caption, widget: string, required: false }
+      - label: Разделы каталога
+        name: categories
+        widget: relation
+        collection: catalog
+        value_field: slug
+        search_fields: [title]
+        display_fields: [title]
+        multiple: true
+        required: false
+      - { label: Черновик (не показывать на сайте), name: draft, widget: boolean, default: false }
+
+  # ---------- Каталог ----------
+  - name: catalog
+    label: Каталог
+    label_singular: Раздел
+    description: Разделы и позиции каталога. Разделы нельзя создавать и удалять здесь — от них зависят адреса страниц.
+    folder: src/content/catalog
+    extension: json
+    format: json
+    create: false
+    delete: false
+    identifier_field: title
+    sortable_fields: [order, title]
+    summary: '{{order}}. {{title}}'
+    fields:
+      - { label: Порядок в каталоге, name: order, widget: number, value_type: int, min: 1 }
+      - { label: Адрес раздела, name: slug, widget: string, hint: 'Часть адреса страницы. Не меняйте — иначе старые ссылки перестанут работать.', pattern: ['^[a-z0-9-]+$', 'Только латиница, цифры и дефис'] }
+      - { label: Название, name: title, widget: string }
+      - { label: Кратко (для оглавления), name: short, widget: text }
+      - { label: Вступление на странице, name: intro, widget: text }
+      - { label: Фото раздела, name: image, widget: image }
+      - label: Поисковики
+        name: seo
+        widget: object
+        collapsed: true
+        fields:
+          - { label: Заголовок вкладки (title), name: title, widget: string, hint: 'До 70 символов' }
+          - { label: Описание (description), name: description, widget: text, hint: 'До 160 символов' }
+      - label: Группы позиций
+        name: groups
+        widget: list
+        summary: '{{fields.title}}'
+        fields:
+          - { label: Название группы, name: title, widget: string }
+          - label: Позиции
+            name: items
+            widget: list
+            summary: '{{fields.name}}'
+            fields:
+              - { label: Название, name: name, widget: string }
+              - { label: Якорь (для ссылки на позицию), name: id, widget: string, hint: 'Латиницей через дефис, например organza. У существующих позиций не менять.', pattern: ['^[a-z0-9-]+$', 'Только латиница, цифры и дефис'] }
+              - { label: Описание, name: text, widget: text }
+
+  # ---------- Тексты страниц ----------
+  - name: pages
+    label: Тексты страниц
+    label_singular: Страница
+    files:
+      - name: home
+        label: Главная
+        file: src/content/pages/home.json
+        fields:
+          - label: Поисковики
+            name: seo
+            widget: object
+            collapsed: true
+            fields:
+              - { label: Заголовок вкладки, name: title, widget: string }
+              - { label: Описание, name: description, widget: text }
+          - label: Обложка
+            name: hero
+            widget: object
+            fields:
+              - { label: Заголовок, name: title, widget: string }
+              - { label: Описание, name: lead, widget: text }
+              - { label: Фото (постер видео), name: image, widget: image }
+              - { label: Что на фото, name: imageAlt, widget: string }
+              - label: Преимущества
+                name: perks
+                widget: list
+                min: 3
+                max: 3
+                summary: '{{fields.title}}'
+                fields:
+                  - { label: Преимущество, name: title, widget: string }
+                  - { label: Пояснение, name: text, widget: string }
+          - label: Вступление
+            name: intro
+            widget: object
+            fields:
+              - { label: Цитата, name: quote, widget: text }
+              - { label: Слово курсивом в цитате, name: quoteAccent, widget: string }
+              - { label: Текст о салоне, name: body, widget: text }
+              - { label: Фото, name: image, widget: image }
+              - { label: Что на фото, name: imageAlt, widget: string }
+              - { label: Подпись к фото, name: caption, widget: string, required: false }
+          - label: Каталог
+            name: catalog
+            widget: object
+            fields:
+              - { label: Заголовок, name: title, widget: string }
+              - { label: Конец заголовка курсивом, name: titleAccent, widget: string }
+          - label: Материал
+            name: material
+            widget: object
+            fields:
+              - { label: Заголовок, name: title, widget: string }
+              - { label: Вторая строка курсивом, name: titleAccent, widget: string }
+              - { label: Текст, name: body, widget: text }
+              - { label: Фото, name: image, widget: image }
+              - { label: Что на фото, name: imageAlt, widget: string }
+          - label: Ателье
+            name: atelier
+            widget: object
+            fields:
+              - { label: Заголовок, name: title, widget: string }
+              - { label: Конец заголовка курсивом, name: titleAccent, widget: string }
+              - { label: Фото, name: image, widget: image }
+              - { label: Что на фото, name: imageAlt, widget: string }
+              - { label: Подпись к фото, name: caption, widget: string, required: false }
+              - { label: Текст о выезде дизайнера, name: featureText, widget: text }
+              - &steps
+                label: Этапы работы
+                name: steps
+                widget: list
+                summary: '{{fields.title}}'
+                fields:
+                  - { label: Этап, name: title, widget: string }
+                  - { label: Пояснение, name: text, widget: text }
+
+      - name: uslugi
+        label: Услуги
+        file: src/content/pages/uslugi.json
+        fields:
+          - &hero
+            label: Заголовок страницы
+            name: hero
+            widget: object
+            fields:
+              - { label: Заголовок, name: title, widget: string }
+              - { label: Продолжение курсивом, name: titleAccent, widget: string }
+              - { label: Описание, name: lead, widget: text }
+              - { label: Фото, name: image, widget: image, required: false }
+              - { label: Что на фото, name: imageAlt, widget: string, required: false }
+          - *steps
+
+      - name: vyezd
+        label: Выезд дизайнера
+        file: src/content/pages/vyezd.json
+        fields:
+          - *hero
+          - label: Что делает дизайнер
+            name: visit
+            widget: list
+            summary: '{{fields.title}}'
+            fields:
+              - { label: Заголовок, name: title, widget: string }
+              - { label: Текст, name: text, widget: text }
+          - { label: Как подготовиться, name: prepare, widget: list, field: { label: Пункт, name: item, widget: text } }
+          - label: Призыв позвонить
+            name: cta
+            widget: object
+            fields:
+              - { label: Заголовок, name: title, widget: string }
+              - { label: Текст, name: text, widget: text }
+
+      - name: tkani
+        label: Ткани
+        file: src/content/pages/tkani.json
+        fields:
+          - *hero
+          - label: Как выбрать ткань
+            name: choose
+            widget: list
+            summary: '{{fields.title}}'
+            fields:
+              - { label: Заголовок, name: title, widget: string }
+              - { label: Текст, name: text, widget: text }
+
+      - name: raboty
+        label: Наши работы (вступление)
+        file: src/content/pages/raboty.json
+        fields:
+          - label: Поисковики
+            name: seo
+            widget: object
+            collapsed: true
+            fields:
+              - { label: Заголовок вкладки, name: title, widget: string }
+              - { label: Описание, name: description, widget: text }
+          - label: Заголовок страницы
+            name: hero
+            widget: object
+            fields:
+              - { label: Заголовок, name: title, widget: string }
+              - { label: Продолжение курсивом, name: titleAccent, widget: string }
+              - { label: Описание, name: lead, widget: text }
+
+      - name: lift
+        label: Лифт-системы
+        file: src/content/pages/lift.json
+        fields:
+          - { label: Описание, name: lead, widget: text }
+          - { label: Важное уточнение, name: note, widget: text }
+          - { label: Фото, name: image, widget: image }
+          - { label: Что на фото, name: imageAlt, widget: string }
+          - *steps
+          - label: Когда это нужно
+            name: cases
+            widget: list
+            summary: '{{fields.title}}'
+            fields:
+              - { label: Заголовок, name: title, widget: string }
+              - { label: Текст, name: text, widget: text }
+
+      - name: blackout
+        label: Блэкаут и Dimout
+        file: src/content/pages/blackout.json
+        fields:
+          - { label: Описание, name: lead, widget: text }
+          - { label: Фото, name: image, widget: image }
+          - { label: Что на фото, name: imageAlt, widget: string }
+          - label: Блэкаут
+            name: blackout
+            widget: object
+            fields:
+              - { label: Заголовок, name: title, widget: string }
+              - { label: Пункты, name: points, widget: list, field: { label: Пункт, name: point, widget: text } }
+          - label: Dimout
+            name: dimout
+            widget: object
+            fields:
+              - { label: Заголовок, name: title, widget: string }
+              - { label: Пункты, name: points, widget: list, field: { label: Пункт, name: point, widget: text } }
+          - label: Где применяется
+            name: where
+            widget: list
+            summary: '{{fields.name}}'
+            fields:
+              - { label: Название, name: name, widget: string }
+              - { label: Ссылка, name: href, widget: string, hint: 'Например /tkani/#blackout' }
+
+  # ---------- Настройки ----------
+  - name: settings
+    label: Контакты и настройки
+    files:
+      - name: salon
+        label: Контакты салона
+        file: src/content/settings/salon.json
+        fields:
+          - { label: Название, name: name, widget: string }
+          - { label: Кто мы (коротко), name: kind, widget: string }
+          - label: Адрес
+            name: address
+            widget: object
+            fields:
+              - { label: Полный адрес, name: full, widget: string }
+              - { label: Улица и дом, name: street, widget: string }
+              - { label: Район, name: district, widget: string }
+              - { label: Округ, name: okrug, widget: string }
+              - { label: Город, name: city, widget: string }
+              - { label: Страна (код), name: country, widget: string }
+          - label: Координаты для карты
+            name: geo
+            widget: object
+            hint: 'Широта и долгота входа в салон, например из Яндекс Карт'
+            fields:
+              - { label: Широта, name: lat, widget: number, value_type: float }
+              - { label: Долгота, name: lng, widget: number, value_type: float }
+          - label: Часы работы
+            name: hours
+            widget: object
+            fields:
+              - { label: Текстом, name: text, widget: string }
+              - { label: Открытие, name: opens, widget: string, pattern: ['^\d{2}:\d{2}$', 'Формат ЧЧ:ММ'] }
+              - { label: Закрытие, name: closes, widget: string, pattern: ['^\d{2}:\d{2}$', 'Формат ЧЧ:ММ'] }
+          - label: Телефоны
+            name: phones
+            widget: list
+            hint: 'Первый номер — основной: он в шапке и на кнопках «Позвонить»'
+            summary: '{{fields.display}} — {{fields.label}}'
+            fields:
+              - { label: Как показывать, name: display, widget: string, hint: '+7 915 444-96-92' }
+              - { label: Для набора, name: tel, widget: string, pattern: ['^\+7\d{10}$', 'Формат +79154449692'] }
+              - { label: Подпись, name: label, widget: string }
+          - { label: Почта, name: email, widget: string }
+          - { label: Способы оплаты, name: payment, widget: list, field: { label: Способ, name: method, widget: string } }
+          - { label: Рассрочка, name: installment, widget: string }
+      - name: features
+        label: Подборки (SEO)
+        file: src/content/settings/features.json
+        fields:
+          - label: Страницы
+            name: pages
+            widget: list
+            summary: '{{fields.title}}'
+            fields:
+              - { label: Адрес, name: path, widget: string, hint: 'Не менять' }
+              - { label: Раздел, name: parent, widget: string, hint: 'Не менять' }
+              - { label: Название, name: title, widget: string }
+              - label: Поисковики
+                name: seo
+                widget: object
+                fields:
+                  - { label: Заголовок вкладки, name: title, widget: string }
+                  - { label: Описание, name: description, widget: text }

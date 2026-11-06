@@ -69,7 +69,8 @@ if (process.argv.includes('--dist')) {
   const placeholderPages = [];
   const walk = (d) => readdirSync(d).forEach((f) => {
     const p = join(d, f);
-    if (statSync(p).isDirectory()) walk(p); else if (p.endsWith('.html')) html.push(p);
+    // /admin/ — служебная страница CMS, не часть сайта
+    if (statSync(p).isDirectory()) { if (f !== 'admin') walk(p); } else if (p.endsWith('.html')) html.push(p);
   });
   walk(dist);
   for (const file of html) {
