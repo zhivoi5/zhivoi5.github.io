@@ -2,7 +2,7 @@
 // Сайт, schema.org и проверочные скрипты берут их только отсюда.
 import { readJson } from './content.mjs';
 
-export const SITE_URL = process.env.SITE_URL ?? 'https://tekstil-dizajn.example';
+export const SITE_URL = process.env.SITE_URL ?? 'https://zhivoi5.github.io';
 
 const data = readJson('settings/salon.json');
 const mapQuery = encodeURIComponent(`${data.address.city}, ${data.address.street}`);
