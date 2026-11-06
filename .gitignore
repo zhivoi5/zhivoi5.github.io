@@ -14,3 +14,7 @@ src/assets/brand/monogram-mask.png
 
 # логи
 npm-debug.log*
+
+# материалы владельца салона — только локально, не в Git
+references/
+brief.md
