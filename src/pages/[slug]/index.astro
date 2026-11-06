@@ -26,7 +26,15 @@ const trail = [
 ];
 // Подборки внутри разделов — отдельные страницы с собственным смыслом запроса
 const bands: Record<string, any> = {
-  karnizy: { ...readJson('pages/lift.json'), label: 'Механизмы', title: 'Лифт-системы', accent: 'для высоких потолков', href: '/karnizy/lift-sistemy/', link: 'Как устроены лифт-системы', textKey: 'lead' },
+  // Анонс лифт-системы: короткий текст (подробности — на её странице), две равные колонки,
+  // кадр с потолочным механизмом кадрируется от верхнего края, чтобы тросы и короб оставались видны
+  karnizy: {
+    ...readJson('pages/lift.json'), image: '/src/assets/media/lift-system-generated.png',
+    imageAlt: 'Тюль на карнизе лифт-системы, опущенном на тросах от потолочного механизма',
+    label: 'Механизмы', title: 'Лифт-система', accent: 'для высоких потолков',
+    announce: 'Современное технологичное решение для интерьеров с высокими потолками.', textKey: 'announce',
+    href: '/karnizy/lift-sistemy/', link: 'Подробнее о системе', even: true, focus: '50% 0%',
+  },
   'shtory-na-zakaz': { ...readJson('pages/blackout.json'), label: 'Светозащита', title: 'Блэкаут', accent: 'и Dimout', href: '/shtory-na-zakaz/blackout-i-dimout/', link: 'Чем они отличаются', textKey: 'lead' },
 };
 const band = bands[cat.slug];
@@ -42,7 +50,7 @@ const neighbours = [categories[i - 1], categories[i + 1]].filter(Boolean);
   <Entries groups={cat.groups} section={cat.title} />
 
   {band && (
-    <Band label={band.label} title={band.title} accent={band.accent} text={band[band.textKey]} href={band.href} link={band.link} image={band.image} imageAlt={band.imageAlt} />
+    <Band label={band.label} title={band.title} accent={band.accent} text={band[band.textKey]} href={band.href} link={band.link} image={band.image} imageAlt={band.imageAlt} even={band.even} focus={band.focus} />
   )}
 
   <section class="rubric" aria-labelledby="next-title">

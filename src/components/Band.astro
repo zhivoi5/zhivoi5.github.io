@@ -1,11 +1,14 @@
 ---
 // Изумрудная полоса «кадр + текст» — для подборок внутри разделов (лифт-системы, блэкаут и Dimout).
+// even — две равные колонки (по умолчанию кадр шире, 7:5); focus — какая часть кадра остаётся при кадрировании.
 import Photo from './Photo.astro';
-interface Props { label: string; title: string; accent?: string; text: string; href: string; link: string; image: string; imageAlt: string; folio?: string }
-const { label, title, accent, text, href, link, image, imageAlt, folio } = Astro.props;
+interface Props { label: string; title: string; accent?: string; text: string; href: string; link: string; image: string; imageAlt: string; folio?: string; even?: boolean; focus?: string }
+const { label, title, accent, text, href, link, image, imageAlt, folio, even = false, focus } = Astro.props;
 ---
-<section class="band" data-folio={folio} data-name={title}>
-  <figure class="band__fig"><Photo src={image} alt={imageAlt} widths={[800, 1200, 1600]} sizes="(min-width: 900px) 58vw, 100vw" ratio={[4, 3]} /></figure>
+<section class:list={['band', { 'band--even': even }]} data-folio={folio} data-name={title}>
+  <figure class="band__fig" style={focus ? `--focus: ${focus}` : undefined}>
+    <Photo src={image} alt={imageAlt} widths={even ? [700, 1000, 1400] : [800, 1200, 1600]} sizes={even ? '(min-width: 900px) 50vw, 100vw' : '(min-width: 900px) 58vw, 100vw'} ratio={[4, 3]} />
+  </figure>
   <div class="band__text">
     <p class="label label--gold">{label}</p>
     <h2>{title}{accent && <> <i>{accent}</i></>}</h2>

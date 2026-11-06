@@ -63,7 +63,7 @@ h3 { margin: 0; }
 
 /* ---------- Изумрудная полоса с кадром (лифт-системы, подборки) ---------- */
 .band { display: grid; background: var(--emerald); color: var(--milk); }
-.band__fig img { width: 100%; height: 100%; min-height: 360px; aspect-ratio: 4 / 3; object-fit: cover; }
+.band__fig img { width: 100%; height: 100%; min-height: 360px; aspect-ratio: 4 / 3; object-fit: cover; object-position: var(--focus, 50% 50%); }
 .band__text { display: grid; gap: 20px; align-content: center; padding: 56px var(--gutter); }
 .band__text h2 i { color: var(--gold); }
 .band__text p { max-width: 32rem; color: var(--champagne); }
@@ -71,6 +71,7 @@ h3 { margin: 0; }
 .band :focus-visible { outline-color: var(--gold); }
 @media (min-width: 900px) {
   .band { grid-template-columns: 7fr 5fr; }
+  .band--even { grid-template-columns: 1fr 1fr; } /* равные колонки, высоту выравнивает сетка */
   .band__fig img { aspect-ratio: auto; min-height: 620px; }
   .band__text { padding: 96px var(--gutter) 96px 56px; }
 }
