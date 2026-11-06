@@ -26,12 +26,21 @@ const { lat, lng } = salon.geo;
     new IntersectionObserver(async ([e], obs) => {
       if (!e.isIntersecting) return;
       obs.disconnect();
-      const [{ Map, Marker, setWorkerUrl }, { default: workerUrl }] = await Promise.all([
+      const [{ Map, Marker, setWorkerUrl }, { default: workerUrl }, { default: cssUrl }] = await Promise.all([
         import('maplibre-gl'),
         // MapLibre 6 рисует тайлы в отдельном самодостаточном воркере — отдаём его как обычный файл сборки
         import('maplibre-gl/dist/maplibre-gl-worker.mjs?url'),
-        import('maplibre-gl/dist/maplibre-gl.css'),
+        // Стили карты — только как адрес файла: иначе сборка добавляет их в общий CSS всех страниц
+        import('maplibre-gl/dist/maplibre-gl.css?url'),
       ]);
+      if (!document.querySelector('link[data-maplibre-css]')) {
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = cssUrl;
+        link.dataset.maplibreCss = '';
+        document.head.append(link);
+        await new Promise((ok) => { link.onload = link.onerror = ok; });
+      }
       setWorkerUrl(workerUrl);
       const at: [number, number] = [Number(el.dataset.lng), Number(el.dataset.lat)];
       const map = new Map({

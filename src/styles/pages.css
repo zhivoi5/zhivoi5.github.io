@@ -162,3 +162,36 @@ h3 { margin: 0; }
 }
 .swatch a { text-decoration: none; }
 .swatch a:hover { color: var(--emerald); }
+
+/* ---------- Области нажатия на телефоне ----------
+   Невидимое поле вокруг небольших ссылок увеличивает область нажатия примерно до 44 px,
+   не меняя ни размера текста, ни отступов. Поле может заходить в пустой зазор между ссылками,
+   но не на текст соседней ссылки и не на карту. */
+.crumbs a, .passport a, .map__routes a, .menu__contacts > a, .anchors a, .link, .swatch a { position: relative; }
+.crumbs a::after, .passport a::after, .map__routes a::after, .menu__contacts > a::after,
+.anchors a::after, .link::after, .swatch a::after {
+  content: ''; position: absolute; inset: -11px -6px;
+}
+/* Хлебные крошки: строка 18 px, разделитель «/» между ссылками — поле шире вверх и вниз, уже по бокам */
+.crumbs a::after { inset: -13px -4px; }
+/* Ссылки маршрута (строка 23 px). Над ними в 12 px — карта, под ними — пустое поле секции.
+   На узком экране они стоят друг под другом с зазором 8 px: верхней отдаём весь зазор (43 px —
+   больше нельзя, не задев карту или текст нижней), нижняя добирает поле снизу (44 px). */
+.map__routes { container-type: inline-size; }
+.map__routes a:first-child::after { top: -12px; bottom: -8px; }
+.map__routes a:last-child::after { top: 0; bottom: -21px; }
+/* Когда ссылки помещаются в одну строку (от ~361 px), у обеих — по 46 px */
+@container (min-width: 380px) {
+  .map__routes a:first-child::after, .map__routes a:last-child::after { top: -12px; bottom: -11px; }
+}
+/* Телефоны в меню: высота 32 px, между ними 8 px */
+.menu__contacts > a::after { inset: -6px -6px; }
+/* Ссылки в «этикетке образца» на странице «Ткани»: строка 21 px, между текстами соседних ссылок 21 px */
+.swatch a::after { inset: -12px -6px; }
+/* Ссылки .link (15 px, строка 19 px) — чуть больше поле по вертикали, чтобы набрать 44 px */
+.link::after { inset: -13px -6px; }
+/* Навигация по группам: строки переносятся с зазором 10 px — поле не заходит на текст соседней строки */
+.anchors a::after { inset: -10px -6px; }
+/* Если крошки переносятся на две строки (узкий экран, длинный путь), поле каждой строки (13 px) не должно
+   доставать до текста другой — нужен зазор не меньше 13 px. На одной строке — без изменений. */
+.crumbs ol { row-gap: 13px; }

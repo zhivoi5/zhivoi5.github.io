@@ -8,6 +8,10 @@ import '../styles/pages.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { localBusiness } from '../data/schema.mjs';
+// Кириллица Cormorant 400 и 400 italic — ими набраны название на обложке и заголовки страниц над сгибом.
+// ?url даёт тот же файл, что и CSS @fontsource, поэтому повторной загрузки нет.
+import serifCyr from '@fontsource/cormorant-garamond/files/cormorant-garamond-cyrillic-400-normal.woff2?url';
+import serifCyrItalic from '@fontsource/cormorant-garamond/files/cormorant-garamond-cyrillic-400-italic.woff2?url';
 
 interface Props {
   title: string;
@@ -36,6 +40,8 @@ const schema = [localBusiness(), ...jsonLd];
     <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="preload" href={serifCyr} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={serifCyrItalic} as="font" type="font/woff2" crossorigin />
 
     <meta property="og:type" content={ogType} />
     <meta property="og:locale" content="ru_RU" />

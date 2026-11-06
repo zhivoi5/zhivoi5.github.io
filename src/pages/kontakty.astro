@@ -9,7 +9,7 @@ import { salon } from '../data/site.mjs';
 const trail = [{ name: 'Главная', path: '/' }, { name: 'Контакты', path: '/kontakty/' }];
 ---
 <Base
-  title="Контакты салона штор «Текстиль Дизайн» — Коммунарка, проспект Куприна, 11к2"
+  title="Контакты «Текстиль Дизайн» — Коммунарка, проспект Куприна, 11к2"
   description={`Салон штор «Текстиль Дизайн»: ${salon.address.city}, ${salon.address.district}, ${salon.address.street}. ${salon.hours.text}. Тел. ${salon.phones.map((p) => p.display).join(', ')}.`}
   jsonLd={[breadcrumbs(trail)]}
 >

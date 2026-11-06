@@ -18,7 +18,8 @@ interface Props {
 }
 const { src, alt, widths = [480, 800, 1200, 1600], sizes = '100vw', class: cls, ratio, loading = 'lazy', fetchpriority } = Astro.props;
 
-const files = import.meta.glob<{ default: ImageMetadata }>('/src/assets/**/*.{jpg,jpeg,png,webp,avif}', { eager: true });
+// Только папки фотографий: служебные файлы (например, маска логотипа в src/assets/brand/) в подбор не попадают
+const files = import.meta.glob<{ default: ImageMetadata }>('/src/assets/{media,works}/**/*.{jpg,jpeg,png,webp,avif}', { eager: true });
 const file = files[src]?.default;
 const name = src.split('/').pop() ?? '';
 const w = Math.max(...widths);

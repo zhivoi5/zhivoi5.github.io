@@ -1,4 +1,4 @@
-// Разметка schema.org (JSON-LD). Только подтверждённые данные: без координат, рейтингов и цен.
+// Разметка schema.org (JSON-LD). Только подтверждённые данные: без рейтингов и цен.
 import { salon, SITE_URL } from './site.mjs';
 import { categories } from './catalog.mjs';
 
@@ -24,6 +24,8 @@ export function localBusiness() {
       addressRegion: salon.address.city,
       addressCountry: salon.address.country,
     },
+    // Координаты из настроек салона (src/content/settings/salon.json)
+    ...(salon.geo && { geo: { '@type': 'GeoCoordinates', latitude: salon.geo.lat, longitude: salon.geo.lng } }),
     areaServed: [
       { '@type': 'Place', name: 'Коммунарка' },
       { '@type': 'City', name: 'Москва' },

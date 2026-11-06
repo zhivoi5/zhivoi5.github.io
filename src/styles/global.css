@@ -1,5 +1,5 @@
 /* Дизайн-система «Выпуск». Перенесено из утверждённого прототипа prototype/styles.css без изменений,
-   кроме блока карты. Стили внутренних страниц — в pages.css. */
+   кроме блока карты и безопасных полей iPhone (--gutter). Стили внутренних страниц — в pages.css. */
 
 :root {
   --milk: #F5F1E9;
@@ -19,13 +19,15 @@
   --serif: 'Cormorant Garamond', 'Times New Roman', serif;
   --sans: 'Manrope Variable', 'Manrope', -apple-system, 'Segoe UI', sans-serif;
 
-  --gutter: 20px;
+  /* Безопасные поля iPhone в горизонтальной ориентации (вырез экрана). В вертикальной — 0, поля как в прототипе */
+  --safe-x: max(env(safe-area-inset-left, 0px), env(safe-area-inset-right, 0px));
+  --gutter: max(20px, var(--safe-x));
   --hdr: 64px;
   --overlap: 12svh; /* насколько кадр вступления заходит на обложку */
   --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
 }
-@media (min-width: 900px) { :root { --gutter: 40px; --overlap: 20svh; } }
-@media (min-width: 1200px) { :root { --gutter: 64px; --hdr: 84px; } }
+@media (min-width: 900px) { :root { --gutter: max(40px, var(--safe-x)); --overlap: 20svh; } }
+@media (min-width: 1200px) { :root { --gutter: max(64px, var(--safe-x)); --hdr: 84px; } }
 
 *, *::before, *::after { box-sizing: border-box; }
 html { scroll-behavior: smooth; scroll-padding-top: var(--hdr); -webkit-text-size-adjust: 100%; }
