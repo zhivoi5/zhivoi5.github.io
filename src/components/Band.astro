@@ -1,0 +1,15 @@
+---
+// Изумрудная полоса «кадр + текст» — для подборок внутри разделов (лифт-системы, блэкаут и Dimout).
+import Photo from './Photo.astro';
+interface Props { label: string; title: string; accent?: string; text: string; href: string; link: string; image: string; imageAlt: string; folio?: string }
+const { label, title, accent, text, href, link, image, imageAlt, folio } = Astro.props;
+---
+<section class="band" data-folio={folio} data-name={title}>
+  <figure class="band__fig"><Photo src={image} alt={imageAlt} widths={[800, 1200, 1600]} sizes="(min-width: 900px) 58vw, 100vw" ratio={[4, 3]} /></figure>
+  <div class="band__text">
+    <p class="label label--gold">{label}</p>
+    <h2>{title}{accent && <> <i>{accent}</i></>}</h2>
+    <p>{text}</p>
+    <a class="link" href={href}>{link} <span aria-hidden="true">→</span></a>
+  </div>
+</section>

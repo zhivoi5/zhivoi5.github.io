@@ -66,6 +66,7 @@ const forbidden = [
 if (process.argv.includes('--dist')) {
   const dist = join(root, 'dist');
   const html = [];
+  const placeholderPages = [];
   const walk = (d) => readdirSync(d).forEach((f) => {
     const p = join(d, f);
     if (statSync(p).isDirectory()) walk(p); else if (p.endsWith('.html')) html.push(p);
@@ -76,10 +77,14 @@ if (process.argv.includes('--dist')) {
     const rel = file.slice(dist.length);
     for (const [re, what] of forbidden) if (re.test(text)) errors.push(`${rel}: ${what} (${re})`);
     if (!rel.includes('404') && !text.includes(salon.phones[0].tel)) errors.push(`${rel}: нет основного телефона`);
-    if (!/<link rel="canonical"/.test(text) && !rel.includes('404')) errors.push(`${rel}: нет canonical`);
+    const noindex = /<meta name="robots" content="noindex/.test(text);
+    if (!/<link rel="canonical"/.test(text) && !noindex) errors.push(`${rel}: нет canonical`);
+    const stubs = (text.match(/data-placeholder/g) || []).length;
+    if (stubs) placeholderPages.push(`${rel} (${stubs})`);
     if ((text.match(/<h1[\s>]/g) || []).length !== 1) errors.push(`${rel}: должен быть ровно один h1`);
   }
   console.log(`Проверено HTML-страниц: ${html.length}`);
+  if (placeholderPages.length) console.warn(`Временные фото-заглушки ещё на ${placeholderPages.length} стр. — заменить перед публикацией: ${placeholderPages.join(', ')}`);
 }
 
 if (warnings.length) console.warn('Каталог отличается от исходного списка владельца:\n- ' + warnings.join('\n- '));

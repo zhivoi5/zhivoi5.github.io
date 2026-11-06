@@ -1,16 +1,18 @@
 ---
+// Блэкаут и Dimout — подборка внутри «Штор на заказ»: сравнение двух светозащитных тканей.
 import Base from '../../layouts/Base.astro';
-import Breadcrumbs from '../../components/Breadcrumbs.astro';
-import CallBand from '../../components/CallBand.astro';
-import Art from '../../components/Art.astro';
-import Icon from '../../components/Icon.astro';
+import Spread from '../../components/Spread.astro';
+import Colophon from '../../components/Colophon.astro';
 import { featurePages, categoryBySlug } from '../../data/catalog.mjs';
+import { readJson } from '../../data/content.mjs';
 import { breadcrumbs, abs, BUSINESS_ID } from '../../data/schema.mjs';
 
-const page = featurePages.find((f) => f.path === '/shtory-na-zakaz/blackout-i-dimout/');
+const page = featurePages.find((f: any) => f.path === '/shtory-na-zakaz/blackout-i-dimout/');
+const t = readJson('pages/blackout.json');
 const parent = categoryBySlug['shtory-na-zakaz'];
 const trail = [
   { name: 'Главная', path: '/' },
+  { name: 'Каталог', path: '/katalog/' },
   { name: parent.title, path: parent.path },
   { name: page.title, path: page.path },
 ];
@@ -24,92 +26,39 @@ const service = {
   provider: { '@id': BUSINESS_ID },
   areaServed: [{ '@type': 'Place', name: 'Коммунарка' }, { '@type': 'City', name: 'Москва' }],
 };
-// Где в каталоге встречаются светозащитные решения
-const where = [
-  { name: 'Шторы блэкаут (Blackout)', href: '/shtory-na-zakaz/#blackout' },
-  { name: 'Шторы Dimout', href: '/shtory-na-zakaz/#dimout' },
-  { name: 'Шторы на подкладке', href: '/shtory-na-zakaz/#na-podkladke' },
-  { name: 'Римские шторы блэкаут', href: '/rimskie-shtory/#blackout' },
-  { name: 'Рулонные шторы блэкаут', href: '/rulonnye-shtory/#blackout' },
-  { name: 'Ткани блэкаут', href: '/tkani/#blackout' },
-  { name: 'Шторы в спальню', href: '/shtory-na-zakaz/#v-spalnyu' },
-  { name: 'Шторы в детскую', href: '/shtory-na-zakaz/#v-detskuyu' },
-];
 ---
 <Base title={page.seo.title} description={page.seo.description} jsonLd={[breadcrumbs(trail), service]}>
-  <section class="bd-hero">
-    <div class="container bd-hero__grid">
-      <div class="bd-hero__text">
-        <Breadcrumbs trail={trail} />
-        <p class="label">Светозащита</p>
-        <h1>Шторы блэкаут и&nbsp;Dimout</h1>
-        <p class="lead">Обе ткани защищают комнату от света, но по-разному. Блэкаут затемняет почти полностью, Dimout — приглушает. Дизайнер поможет выбрать, исходя из того, как вы пользуетесь комнатой.</p>
-      </div>
-      <div class="bd-hero__art"><Art type="drape" /></div>
+  <Spread trail={trail} label={`${parent.title} — Светозащита`} folio="00" title="Блэкаут" accent="и Dimout" lead={t.lead} image={t.image} imageAlt={t.imageAlt} />
+
+  <section class="rubric" data-folio="01" data-name="Сравнение" aria-labelledby="cmp-title">
+    <div class="rubric__head">
+      <p class="label"><span class="tnum">01</span> — Сравнение</p>
+      <h2 id="cmp-title">Темнота <i>или полутень</i></h2>
+    </div>
+    <div class="rubric__body compare">
+      <article>
+        <p class="label">Blackout</p>
+        <h3>{t.blackout.title}</h3>
+        <ul role="list">{t.blackout.points.map((p: string) => <li>{p}</li>)}</ul>
+      </article>
+      <article>
+        <p class="label">Dimout</p>
+        <h3>{t.dimout.title}</h3>
+        <ul role="list">{t.dimout.points.map((p: string) => <li>{p}</li>)}</ul>
+      </article>
     </div>
   </section>
 
-  <section class="section section--alt">
-    <div class="container">
-      <h2 class="visually-hidden">Сравнение блэкаут и Dimout</h2>
-      <div class="compare">
-        <article class="compare__col compare__col--dark on-dark">
-          <p class="label">Blackout</p>
-          <h3 class="display">Почти полное затемнение</h3>
-          <ul role="list">
-            <li>Плотная ткань практически не пропускает свет.</li>
-            <li>Подходит для спальни, детской, домашнего кинотеатра.</li>
-            <li>Помогает, если окна выходят на солнечную сторону или на освещённую улицу.</li>
-          </ul>
-        </article>
-        <article class="compare__col">
-          <p class="label">Dimout</p>
-          <h3 class="display">Мягкий приглушённый свет</h3>
-          <ul role="list">
-            <li>Ткань заметно приглушает свет, но не затемняет комнату полностью.</li>
-            <li>Подходит для гостиной, кабинета, кухни.</li>
-            <li>Сохраняет ощущение дневного света в комнате.</li>
-          </ul>
-        </article>
-      </div>
+  <section class="rubric" data-folio="02" data-name="В каталоге" aria-labelledby="where-title">
+    <div class="rubric__head">
+      <p class="label"><span class="tnum">02</span> — В каталоге</p>
+      <h2 id="where-title">Где <i>применяется</i></h2>
+      <p class="rubric__note">Светонепроницаемые ткани используются не только в классических шторах.</p>
+    </div>
+    <div class="rubric__body pointers">
+      {t.where.map((w: any) => <a href={w.href}>{w.name} <span aria-hidden="true">→</span></a>)}
     </div>
   </section>
 
-  <section class="section">
-    <div class="container bd-two">
-      <div class="section-head">
-        <p class="label">В каталоге</p>
-        <h2>Где применяется</h2>
-        <p class="lead">Светонепроницаемые ткани используются не только в классических шторах.</p>
-      </div>
-      <ul role="list" class="bd-links">
-        {where.map((w) => <li><a href={w.href}>{w.name} <Icon name="arrow" size={18} /></a></li>)}
-      </ul>
-    </div>
-  </section>
-
-  <CallBand />
+  <Colophon map={false} />
 </Base>
-
-<style>
-  .bd-hero { padding-block: var(--space-3) var(--space-8); }
-  .bd-hero__grid { display: grid; gap: var(--space-6); }
-  .bd-hero__text { display: grid; gap: var(--space-4); align-content: start; }
-  .bd-hero__art { width: 60%; max-width: 16rem; }
-  @media (min-width: 1024px) { .bd-hero__grid { grid-template-columns: 8fr 4fr; gap: var(--space-9); align-items: end; } .bd-hero__art { width: 100%; max-width: 22rem; justify-self: end; } }
-  .compare { display: grid; gap: var(--space-4); }
-  .compare__col { display: grid; gap: var(--space-4); align-content: start; padding: var(--space-6); border-radius: var(--radius-md); background: var(--color-surface); border: 1px solid var(--color-line); }
-  .compare__col--dark { background: var(--color-surface-dark); border-color: var(--color-surface-dark); }
-  .compare__col h3 { font-size: var(--fs-h3); }
-  .compare__col ul { display: grid; gap: var(--space-3); }
-  .compare__col li { padding-left: 1.25rem; position: relative; }
-  .compare__col li::before { content: ''; position: absolute; left: 0; top: 0.75em; width: 0.5rem; height: 1px; background: var(--color-hairline-gold); }
-  @media (min-width: 768px) { .compare { grid-template-columns: 1fr 1fr; } }
-  .bd-two { display: grid; gap: var(--space-5); }
-  @media (min-width: 1024px) { .bd-two { grid-template-columns: 5fr 7fr; gap: var(--space-9); } }
-  .bd-links { display: grid; }
-  @media (min-width: 768px) { .bd-links { grid-template-columns: 1fr 1fr; column-gap: var(--space-6); } }
-  .bd-links a { display: flex; justify-content: space-between; align-items: center; padding-block: 0.9rem; border-bottom: 1px solid var(--color-line); text-decoration: none; font-weight: 500; }
-  .bd-links a:hover { color: var(--color-primary); }
-  .bd-links :global(svg) { color: var(--color-line-strong); }
-</style>

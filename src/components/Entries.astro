@@ -1,0 +1,23 @@
+---
+// Группы позиций раздела: рубрика слева, список позиций с якорями справа.
+interface Item { name: string; id: string; text: string }
+interface Props { groups: { title: string; items: Item[] }[]; section: string }
+const { groups, section } = Astro.props;
+const num = (i: number) => String(i + 1).padStart(2, '0');
+---
+{groups.length > 1 && (
+  <nav class="anchors" aria-label="Группы раздела">
+    {groups.map((g, i) => <a href={`#g-${i + 1}`}><span class="tnum">{num(i)}</span>{g.title}</a>)}
+  </nav>
+)}
+{groups.map((g, i) => (
+  <section class="rubric" id={`g-${i + 1}`} data-folio={num(i)} data-name={g.title} aria-labelledby={`g-${i + 1}-title`}>
+    <div class="rubric__head">
+      <p class="label"><span class="tnum">{num(i)}</span> — {section}</p>
+      <h2 id={`g-${i + 1}-title`}>{g.title}</h2>
+    </div>
+    <ul class="rubric__body entries" role="list">
+      {g.items.map((it) => <li id={it.id}><h3>{it.name}</h3><p>{it.text}</p></li>)}
+    </ul>
+  </section>
+))}

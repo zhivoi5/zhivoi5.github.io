@@ -1,21 +1,22 @@
 ---
+// «Выезд дизайнера»: что происходит во время визита, как подготовиться, звонок салону или дизайнеру.
 import Base from '../../layouts/Base.astro';
-import Breadcrumbs from '../../components/Breadcrumbs.astro';
-import CallBand from '../../components/CallBand.astro';
-import Art from '../../components/Art.astro';
-import Icon from '../../components/Icon.astro';
+import Spread from '../../components/Spread.astro';
+import Colophon from '../../components/Colophon.astro';
 import { featurePages, categoryBySlug } from '../../data/catalog.mjs';
-import { breadcrumbs, abs, BUSINESS_ID } from '../../data/schema.mjs';
+import { readJson } from '../../data/content.mjs';
 import { salon } from '../../data/site.mjs';
+import { breadcrumbs, abs, BUSINESS_ID } from '../../data/schema.mjs';
 
-const page = featurePages.find((f) => f.path === '/uslugi/vyezd-dizajnera/');
+const page = featurePages.find((f: any) => f.path === '/uslugi/vyezd-dizajnera/');
+const t = readJson('pages/vyezd.json');
 const parent = categoryBySlug['uslugi'];
+const [main, designer] = salon.phones;
 const trail = [
   { name: 'Главная', path: '/' },
   { name: parent.title, path: parent.path },
   { name: page.title, path: page.path },
 ];
-const designer = salon.phones[1];
 const service = {
   '@context': 'https://schema.org',
   '@type': 'Service',
@@ -26,74 +27,42 @@ const service = {
   provider: { '@id': BUSINESS_ID },
   areaServed: [{ '@type': 'Place', name: 'Коммунарка' }, { '@type': 'City', name: 'Москва' }],
 };
-const prepare = [
-  'Подумайте, в каких комнатах нужно оформить окна и что для вас важнее: затемнение, лёгкость, практичность.',
-  'Если есть фотографии интерьера или примеры, которые нравятся, — подготовьте их.',
-  'Освободите доступ к окнам, чтобы дизайнер мог точно снять размеры.',
-  'Уточните, остаются ли старые карнизы или нужен новый монтаж.',
-];
 ---
 <Base title={page.seo.title} description={page.seo.description} jsonLd={[breadcrumbs(trail), service]}>
-  <section class="vz-hero">
-    <div class="container vz-hero__grid">
-      <div class="vz-hero__text">
-        <Breadcrumbs trail={trail} />
-        <p class="label">Услуги</p>
-        <h1>Выезд дизайнера на&nbsp;замер</h1>
-        <p class="lead">Дизайнер приезжает к вам с образцами тканей, делает точные замеры окон и помогает выбрать шторы, тюль, карнизы и солнцезащитные системы прямо в интерьере — при вашем свете и рядом с вашей мебелью.</p>
-        <div class="vz-actions">
-          <a class="btn" href={`tel:${designer.tel}`}><Icon name="phone" /> Татьяна, дизайнер: <span class="tnum">{designer.display}</span></a>
-        </div>
-      </div>
-      <div class="vz-hero__art"><Art type="needle" /></div>
+  <Spread trail={trail} label="Услуги — Первый шаг" folio="00" title={t.hero.title} accent={t.hero.titleAccent} lead={t.hero.lead} image={t.hero.image} imageAlt={t.hero.imageAlt}>
+    <a class="btn btn--emerald" href={`tel:${designer.tel}`}>Татьяна, дизайнер: <span class="tnum">{designer.display}</span></a>
+  </Spread>
+
+  <section class="rubric" data-folio="01" data-name="Визит" aria-labelledby="visit-title">
+    <div class="rubric__head">
+      <p class="label"><span class="tnum">01</span> — Во время визита</p>
+      <h2 id="visit-title">Что делает <i>дизайнер</i></h2>
+    </div>
+    <ul class="rubric__body theses theses--stack" role="list">
+      {t.visit.map((v: any) => <li><h3>{v.title}</h3><p>{v.text}</p></li>)}
+    </ul>
+  </section>
+
+  <section class="rubric" data-folio="02" data-name="Подготовка" aria-labelledby="prep-title">
+    <div class="rubric__head">
+      <p class="label"><span class="tnum">02</span> — Перед визитом</p>
+      <h2 id="prep-title">Как <i>подготовиться</i></h2>
+    </div>
+    <ol class="rubric__body numbered" role="list">
+      {t.prepare.map((p: string, i: number) => <li><span class="tnum">{String(i + 1).padStart(2, '0')}</span><p>{p}</p></li>)}
+    </ol>
+  </section>
+
+  <section class="call" aria-labelledby="call-title">
+    <div>
+      <h2 id="call-title">{t.cta.title}</h2>
+      <p>{t.cta.text}</p>
+    </div>
+    <div class="call__actions">
+      <a class="btn btn--emerald" href={`tel:${main.tel}`}>Салон: <span class="tnum">{main.display}</span></a>
+      <a class="btn btn--line" href={`tel:${designer.tel}`}>Татьяна: <span class="tnum">{designer.display}</span></a>
     </div>
   </section>
 
-  <section class="section section--alt">
-    <div class="container vz-two">
-      <div class="section-head">
-        <p class="label">Во время визита</p>
-        <h2>Что делает дизайнер</h2>
-      </div>
-      <ul role="list" class="vz-list">
-        <li><Icon name="swatch" size={28} /><div><h3>Привозит образцы тканей</h3><p class="muted">Ткань можно оценить при дневном и вечернем свете, рядом с обивкой и стенами.</p></div></li>
-        <li><Icon name="ruler" size={28} /><div><h3>Делает точные замеры</h3><p class="muted">По ним шторы и тюль шьются точно под размер окна, а карнизы подбираются под проём и потолок.</p></div></li>
-        <li><Icon name="sparkle" size={28} /><div><h3>Консультирует</h3><p class="muted">Предлагает варианты тканей, карнизов и конструкций под стиль интерьера и задачу.</p></div></li>
-      </ul>
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="container vz-two">
-      <div class="section-head">
-        <p class="label">Перед визитом</p>
-        <h2>Как подготовиться</h2>
-      </div>
-      <ol role="list" class="vz-prep">
-        {prepare.map((p, i) => <li><span class="tnum">{String(i + 1).padStart(2, '0')}</span><p>{p}</p></li>)}
-      </ol>
-    </div>
-  </section>
-
-  <CallBand title="Договоримся о выезде" text="Позвоните в салон или дизайнеру Татьяне, чтобы выбрать удобное время визита." />
+  <Colophon map={false} />
 </Base>
-
-<style>
-  .vz-hero { padding-block: var(--space-3) var(--space-8); }
-  .vz-hero__grid { display: grid; gap: var(--space-6); }
-  .vz-hero__text { display: grid; gap: var(--space-4); align-content: start; }
-  .vz-actions { margin-top: var(--space-2); }
-  .vz-actions .btn { width: 100%; }
-  @media (min-width: 600px) { .vz-actions .btn { width: auto; } }
-  .vz-hero__art { width: 60%; max-width: 16rem; }
-  @media (min-width: 1024px) { .vz-hero__grid { grid-template-columns: 8fr 4fr; gap: var(--space-9); align-items: end; } .vz-hero__art { width: 100%; max-width: 22rem; justify-self: end; } }
-  .vz-two { display: grid; gap: var(--space-5); }
-  @media (min-width: 1024px) { .vz-two { grid-template-columns: 5fr 7fr; gap: var(--space-9); } }
-  .vz-list { display: grid; gap: var(--space-5); }
-  .vz-list li { display: flex; gap: var(--space-4); padding-top: var(--space-5); border-top: 1px solid var(--color-line); }
-  .vz-list :global(svg) { color: var(--color-primary); flex: none; }
-  .vz-list h3 { font-family: var(--font-body); font-size: var(--fs-h4); font-weight: 600; line-height: 1.35; margin-bottom: 0.25rem; }
-  .vz-prep { display: grid; }
-  .vz-prep li { display: flex; gap: var(--space-5); padding-block: var(--space-4); border-bottom: 1px solid var(--color-line); }
-  .vz-prep span { font-family: var(--font-display); font-size: 1.5rem; color: var(--color-text-accent); line-height: 1.1; min-width: 2.25rem; }
-</style>

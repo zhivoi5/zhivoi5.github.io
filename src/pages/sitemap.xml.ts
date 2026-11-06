@@ -1,9 +1,17 @@
 import type { APIRoute } from 'astro';
 import { categories, featurePages } from '../data/catalog.mjs';
+import { getWorks } from '../data/works';
 
 // Карта сайта: только индексируемые страницы с канонических адресов.
-export const GET: APIRoute = ({ site }) => {
-  const paths = ['/', ...categories.map((c) => c.path), ...featurePages.map((f) => f.path), '/kontakty/'];
+export const GET: APIRoute = async ({ site }) => {
+  const works = await getWorks();
+  const paths = [
+    '/', '/katalog/',
+    ...categories.map((c) => c.path),
+    ...featurePages.map((f) => f.path),
+    ...(works.length ? ['/nashi-raboty/'] : []),
+    '/kontakty/',
+  ];
   const lastmod = new Date().toISOString().slice(0, 10);
   const body = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

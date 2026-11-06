@@ -1,0 +1,41 @@
+---
+// Каталог: все разделы оглавлением «Выпуска» + отдельные подборки.
+import Base from '../../layouts/Base.astro';
+import Spread from '../../components/Spread.astro';
+import Toc from '../../components/Toc.astro';
+import Colophon from '../../components/Colophon.astro';
+import { categories, featurePages, allItems } from '../../data/catalog.mjs';
+import { breadcrumbs, abs } from '../../data/schema.mjs';
+
+const trail = [{ name: 'Главная', path: '/' }, { name: 'Каталог', path: '/katalog/' }];
+const list = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: 'Каталог салона «Текстиль Дизайн»',
+  itemListElement: categories.map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: c.title, url: abs(c.path) })),
+};
+---
+<Base
+  title="Каталог: шторы, тюль, жалюзи, карнизы и текстиль на заказ | Текстиль Дизайн"
+  description={`Каталог салона «Текстиль Дизайн» в Коммунарке: ${categories.map((c) => c.title.toLowerCase()).join(', ')}. ${allItems.length} позиций с описанием.`}
+  jsonLd={[breadcrumbs(trail), list]}
+>
+  <Spread trail={trail} label="Т-00 — Каталог" folio="Т-00" title="Каталог" accent="салона"
+    lead="Шторы и тюль на заказ, римские и рулонные шторы, жалюзи и плиссе, карнизы и механизмы, ткани и домашний текстиль — всё, что нужно окну и интерьеру." />
+
+  <section class="index" aria-label="Разделы каталога" data-folio="Т-01" data-name="Разделы">
+    <Toc sections={categories} />
+  </section>
+
+  <section class="rubric" aria-labelledby="feat-title">
+    <div class="rubric__head">
+      <p class="label">Подборки</p>
+      <h2 id="feat-title">Отдельно <i>о важном</i></h2>
+    </div>
+    <div class="rubric__body pointers">
+      {featurePages.map((f: any) => <a href={f.path}>{f.title} <span aria-hidden="true">→</span></a>)}
+    </div>
+  </section>
+
+  <Colophon map={false} />
+</Base>

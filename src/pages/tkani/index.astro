@@ -1,0 +1,55 @@
+---
+// «Ткани» — отдельная страница в духе секции «Материал»: макро во весь экран, этикетка образца, как выбрать.
+import Base from '../../layouts/Base.astro';
+import Spread from '../../components/Spread.astro';
+import Entries from '../../components/Entries.astro';
+import Photo from '../../components/Photo.astro';
+import Colophon from '../../components/Colophon.astro';
+import { categoryBySlug } from '../../data/catalog.mjs';
+import { readJson } from '../../data/content.mjs';
+import { salon } from '../../data/site.mjs';
+import { breadcrumbs, categoryService } from '../../data/schema.mjs';
+
+const cat = categoryBySlug['tkani'];
+const t = readJson('pages/tkani.json');
+const code = `Т-${String(cat.order).padStart(2, '0')}`;
+const trail = [
+  { name: 'Главная', path: '/' },
+  { name: 'Каталог', path: '/katalog/' },
+  { name: cat.title, path: cat.path },
+];
+---
+<Base title={cat.seo.title} description={cat.seo.description} jsonLd={[breadcrumbs(trail), categoryService(cat)]}>
+  <Spread trail={trail} label={`${code} — Материал`} folio={code} title={t.hero.title} accent={t.hero.titleAccent} lead={t.hero.lead} image={cat.image} imageAlt={cat.short}>
+    <a class="btn btn--emerald" href="/uslugi/vyezd-dizajnera/">Образцы на выезде</a>
+    <a class="btn btn--line" href={`tel:${salon.phones[0].tel}`}>Позвонить в салон</a>
+  </Spread>
+
+  <section class="material" data-folio="01" data-name="Фактура" aria-labelledby="mat-title">
+    <Photo class="material__img" src={t.hero.image} alt={t.hero.imageAlt} widths={[1000, 1600, 2400]} sizes="100vw" />
+    <div class="material__shade" aria-hidden="true"></div>
+    <div class="material__inner">
+      <p class="label label--gold"><span class="tnum">01</span> — Как выбрать</p>
+      <h2 id="mat-title" class="material__title">Свет,<br><i>фактура</i></h2>
+    </div>
+    <aside class="swatch" aria-label="Как выбрать ткань">
+      <p class="swatch__code tnum">{code}</p>
+      <p class="swatch__title">{cat.title}</p>
+      <ul role="list">{cat.groups.flatMap((g: any) => g.items).map((i: any) => <li><a href={`#${i.id}`}>{i.name}</a></li>)}</ul>
+    </aside>
+  </section>
+
+  <section class="rubric" data-folio="02" data-name="Выбор" aria-labelledby="choose-title">
+    <div class="rubric__head">
+      <p class="label"><span class="tnum">02</span> — На что смотреть</p>
+      <h2 id="choose-title">Три вопроса <i>к ткани</i></h2>
+    </div>
+    <ul class="rubric__body theses theses--stack" role="list">
+      {t.choose.map((c: any) => <li><h3>{c.title}</h3><p>{c.text}</p></li>)}
+    </ul>
+  </section>
+
+  <Entries groups={cat.groups} section={cat.title} />
+
+  <Colophon map={false} />
+</Base>

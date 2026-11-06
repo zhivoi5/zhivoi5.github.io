@@ -1,16 +1,19 @@
 ---
+// Лифт-системы — подборка внутри «Карнизов и механизмов». Схема-анимация заменена кадром и текстом.
 import Base from '../../layouts/Base.astro';
-import Breadcrumbs from '../../components/Breadcrumbs.astro';
-import LiftDiagram from '../../components/LiftDiagram.astro';
-import CallBand from '../../components/CallBand.astro';
-import Icon from '../../components/Icon.astro';
+import Spread from '../../components/Spread.astro';
+import Colophon from '../../components/Colophon.astro';
 import { featurePages, categoryBySlug } from '../../data/catalog.mjs';
+import { readJson } from '../../data/content.mjs';
+import { salon } from '../../data/site.mjs';
 import { breadcrumbs, abs, BUSINESS_ID } from '../../data/schema.mjs';
 
-const page = featurePages.find((f) => f.path === '/karnizy/lift-sistemy/');
+const page = featurePages.find((f: any) => f.path === '/karnizy/lift-sistemy/');
+const t = readJson('pages/lift.json');
 const parent = categoryBySlug['karnizy'];
 const trail = [
   { name: 'Главная', path: '/' },
+  { name: 'Каталог', path: '/katalog/' },
   { name: parent.title, path: parent.path },
   { name: page.title, path: page.path },
 ];
@@ -24,96 +27,44 @@ const service = {
   provider: { '@id': BUSINESS_ID },
   areaServed: [{ '@type': 'Place', name: 'Коммунарка' }, { '@type': 'City', name: 'Москва' }],
 };
-const cases = [
-  { t: 'Окна в два света', d: 'Остекление на высоту двух этажей в гостиной загородного дома или квартиры.' },
-  { t: 'Высокие потолки', d: 'Когда до карниза не дотянуться даже со стремянкой или её негде поставить.' },
-  { t: 'Лестничные пролёты', d: 'Окна над лестницей, где обычный монтаж и навеска неудобны и небезопасны.' },
-  { t: 'Панорамное остекление', d: 'Большие плоскости тяжёлых штор, которые приходится регулярно снимать для ухода.' },
-];
+const related = parent.groups.flatMap((g: any) => g.items).filter((i: any) => /электро|потолоч|монтаж|подсвет/i.test(i.name));
 ---
 <Base title={page.seo.title} description={page.seo.description} jsonLd={[breadcrumbs(trail), service]}>
-  <section class="section on-dark lp-hero">
-    <div class="container lp-hero__grid">
-      <div class="lp-hero__text">
-        <Breadcrumbs trail={trail} />
-        <p class="label">Карнизы и системы для штор</p>
-        <h1>Лифт-системы для штор</h1>
-        <p class="lead">Лифт-система — это карниз, который вместе со шторами опускается вниз на тросах. Шторы можно снять для чистки или повесить обратно на удобной высоте, а затем поднять всю конструкцию под потолок.</p>
-        <p class="lp-note">Важно не путать: подъёмный механизм римской шторы собирает ткань в складки, а карниз остаётся на месте. В лифт-системе вниз опускается <strong>весь карниз</strong> вместе со шторами.</p>
-      </div>
-      <LiftDiagram />
+  <Spread trail={trail} label={`${parent.title} — Механизмы`} folio="00" title="Лифт-системы" accent="для штор" lead={t.lead} image={t.image} imageAlt={t.imageAlt}>
+    <a class="btn btn--emerald" href={`tel:${salon.phones[0].tel}`}>Позвонить в салон</a>
+  </Spread>
+
+  <section class="rubric" data-folio="01" data-name="Как работает" aria-labelledby="how-title">
+    <div class="rubric__head">
+      <p class="label"><span class="tnum">01</span> — Как это работает</p>
+      <h2 id="how-title">Три движения <i>вместо стремянки</i></h2>
+      <p class="rubric__note">{t.note}</p>
+    </div>
+    <ol class="rubric__body numbered" role="list">
+      {t.steps.map((s: any, i: number) => <li><span class="tnum">{String(i + 1).padStart(2, '0')}</span><b>{s.title}</b><p>{s.text}</p></li>)}
+    </ol>
+  </section>
+
+  <section class="rubric" data-folio="02" data-name="Когда нужно" aria-labelledby="cases-title">
+    <div class="rubric__head">
+      <p class="label"><span class="tnum">02</span> — Когда это нужно</p>
+      <h2 id="cases-title">Для окон, <i>до которых не добраться</i></h2>
+    </div>
+    <ul class="rubric__body theses theses--stack" role="list">
+      {t.cases.map((c: any) => <li><h3>{c.title}</h3><p>{c.text}</p></li>)}
+    </ul>
+  </section>
+
+  <section class="rubric" data-folio="03" data-name="Вместе" aria-labelledby="with-title">
+    <div class="rubric__head">
+      <p class="label"><span class="tnum">03</span> — Вместе с лифт-системой</p>
+      <h2 id="with-title">Что ещё <i>подберёт салон</i></h2>
+    </div>
+    <div class="rubric__body pointers">
+      {related.map((i: any) => <a href={`${parent.path}#${i.id}`}>{i.name} <span aria-hidden="true">→</span></a>)}
+      <a href={parent.path}>Все карнизы и механизмы <span aria-hidden="true">→</span></a>
     </div>
   </section>
 
-  <section class="section">
-    <div class="container lp-two">
-      <div class="section-head">
-        <p class="label">Как это работает</p>
-        <h2>Три движения вместо стремянки</h2>
-      </div>
-      <ol role="list" class="lp-steps">
-        <li><span class="tnum">01</span><div><h3>Опустить</h3><p class="muted">Карниз со шторами плавно спускается на тросах с высоты потолка.</p></div></li>
-        <li><span class="tnum">02</span><div><h3>Снять или повесить</h3><p class="muted">Шторы снимают для химчистки или отпаривания и вешают обратно, стоя на полу.</p></div></li>
-        <li><span class="tnum">03</span><div><h3>Поднять</h3><p class="muted">Конструкция возвращается на место, шторы снова висят под потолком.</p></div></li>
-      </ol>
-    </div>
-  </section>
-
-  <section class="section section--alt">
-    <div class="container">
-      <div class="section-head">
-        <p class="label">Когда это нужно</p>
-        <h2>Для окон, до которых не добраться</h2>
-      </div>
-      <ul role="list" class="lp-cases">
-        {cases.map((c) => <li><h3>{c.t}</h3><p class="muted">{c.d}</p></li>)}
-      </ul>
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="container lp-two">
-      <div class="section-head">
-        <p class="label">Вместе с лифт-системой</p>
-        <h2>Что ещё подберёт салон</h2>
-      </div>
-      <ul role="list" class="lp-links">
-        <li><a href="/karnizy/#elektrokarnizy">Электрокарнизы <Icon name="arrow" size={18} /></a></li>
-        <li><a href="/karnizy/#potolochnye">Потолочные карнизы <Icon name="arrow" size={18} /></a></li>
-        <li><a href="/shtory-na-zakaz/#v-zagorodnyj-dom">Шторы в загородный дом <Icon name="arrow" size={18} /></a></li>
-        <li><a href="/uslugi/#montazh-karnizov">Установка и монтаж карнизов <Icon name="arrow" size={18} /></a></li>
-        <li><a href="/uslugi/#himchistka">Химчистка штор <Icon name="arrow" size={18} /></a></li>
-        <li><a href="/uslugi/vyezd-dizajnera/">Выезд дизайнера на замер <Icon name="arrow" size={18} /></a></li>
-      </ul>
-    </div>
-  </section>
-
-  <CallBand title="Расскажите о вашем окне" text="Позвоните в салон: обсудим высоту, размеры окна и вес штор, договоримся о выезде дизайнера на замер." />
+  <Colophon map={false} />
 </Base>
-
-<style>
-  .lp-hero { padding-top: var(--space-3); }
-  .lp-hero__grid { display: grid; gap: var(--space-7); align-items: center; }
-  .lp-hero__text { display: grid; gap: var(--space-4); }
-  .lp-hero :global(.crumbs ol), .lp-hero :global(.crumbs a) { color: var(--color-text-on-dark-muted); }
-  .lp-note { padding: var(--space-4) var(--space-5); border-left: 1px solid var(--color-accent-on-dark); background: rgb(245 241 233 / 0.05); max-width: 36rem; }
-  .lp-note strong { color: var(--color-accent-on-dark); font-weight: 600; }
-  @media (min-width: 1024px) { .lp-hero__grid { grid-template-columns: 7fr 5fr; gap: var(--space-9); } }
-
-  .lp-two { display: grid; gap: var(--space-5); }
-  @media (min-width: 1024px) { .lp-two { grid-template-columns: 5fr 7fr; gap: var(--space-9); } }
-  .lp-steps { display: grid; }
-  .lp-steps li { display: flex; gap: var(--space-5); padding-block: var(--space-5); border-bottom: 1px solid var(--color-line); }
-  .lp-steps li:first-child { border-top: 1px solid var(--color-line); }
-  .lp-steps span { font-family: var(--font-display); font-size: 1.75rem; color: var(--color-text-accent); line-height: 1; min-width: 2.5rem; }
-  .lp-steps h3, .lp-cases h3 { font-family: var(--font-body); font-size: var(--fs-h4); font-weight: 600; line-height: 1.35; margin-bottom: 0.25rem; }
-  .lp-cases { display: grid; gap: var(--space-5); }
-  .lp-cases li { padding-top: var(--space-5); border-top: 1px solid var(--color-hairline-gold); }
-  @media (min-width: 768px) { .lp-cases { grid-template-columns: 1fr 1fr; gap: var(--space-6); } }
-  @media (min-width: 1024px) { .lp-cases { grid-template-columns: repeat(4, 1fr); } }
-  .lp-links { display: grid; }
-  .lp-links a { display: flex; justify-content: space-between; align-items: center; padding-block: 0.9rem; border-bottom: 1px solid var(--color-line); text-decoration: none; font-weight: 500; }
-  .lp-links a:hover { color: var(--color-primary); }
-  .lp-links :global(svg) { color: var(--color-line-strong); }
-  .lp-links a:hover :global(svg) { color: var(--color-primary); }
-</style>

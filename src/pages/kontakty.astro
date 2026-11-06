@@ -1,7 +1,8 @@
 ---
 import Base from '../layouts/Base.astro';
-import Breadcrumbs from '../components/Breadcrumbs.astro';
-import Contacts from '../components/Contacts.astro';
+import Crumbs from '../components/Crumbs.astro';
+import Colophon from '../components/Colophon.astro';
+import Terms from '../components/Terms.astro';
 import { breadcrumbs } from '../data/schema.mjs';
 import { salon } from '../data/site.mjs';
 
@@ -12,10 +13,12 @@ const trail = [{ name: 'Главная', path: '/' }, { name: 'Контакты'
   description={`Салон штор «Текстиль Дизайн»: ${salon.address.city}, ${salon.address.district}, ${salon.address.street}. ${salon.hours.text}. Тел. ${salon.phones.map((p) => p.display).join(', ')}.`}
   jsonLd={[breadcrumbs(trail)]}
 >
-  <div class="container kp-crumbs"><Breadcrumbs trail={trail} /></div>
-  <Contacts headingLevel="h1" title="Контакты салона «Текстиль Дизайн»" id="salon" />
+  <div class="kp-crumbs"><Crumbs trail={trail} /></div>
+  <Colophon level="h1" />
+  <div class="kp-terms"><Terms /></div>
 </Base>
 
 <style>
-  .kp-crumbs { padding-block: var(--space-2); }
+  .kp-crumbs { padding: 20px var(--gutter); }
+  .kp-terms { padding: 48px var(--gutter) 96px; }
 </style>

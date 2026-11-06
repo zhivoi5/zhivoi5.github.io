@@ -1,10 +1,15 @@
 ---
 import { salon } from '../data/site.mjs';
+import { getWorks } from '../data/works';
+const hasWorks = (await getWorks()).length > 0;
 ---
 <footer class="foot">
   <img src="/brand/monogram-gold.svg" alt="" width="44" height="40">
   <p>«{salon.name}» — салон штор и текстильного дизайна.</p>
-  <p class="foot__note">Фотографии на сайте — иллюстрации интерьеров, а не выполненные заказы салона. Работы салона собраны в разделе «Наши работы».</p>
+  <p class="foot__note">
+    Фотографии на сайте — иллюстрации интерьеров, а не выполненные заказы салона.
+    {hasWorks && <>Реальные работы — в разделе <a href="/nashi-raboty/">«Наши работы»</a>.</>}
+  </p>
 </footer>
 
 <nav class="bar" aria-label="Быстрая связь">

@@ -1,0 +1,31 @@
+---
+// Разворот внутренней страницы: крошки, рубрика, заголовок с курсивным акцентом, лид, кадр справа до края экрана.
+import Crumbs from './Crumbs.astro';
+import Photo from './Photo.astro';
+
+interface Props {
+  trail: { name: string; path: string }[];
+  label: string;
+  folio: string;
+  title: string;
+  accent?: string;
+  lead?: string;
+  image?: string;
+  imageAlt?: string;
+}
+const { trail, label, folio, title, accent, lead, image, imageAlt = '' } = Astro.props;
+---
+<section class:list={['spread', { 'spread--plain': !image }]} data-folio={folio} data-name={trail.at(-1)?.name}>
+  <div class="spread__text">
+    <Crumbs trail={trail} />
+    <p class="label">{label}</p>
+    <h1 class="spread__title">{title}{accent && <> <i>{accent}</i></>}</h1>
+    {lead && <p class="spread__lead">{lead}</p>}
+    <div class="spread__actions"><slot /></div>
+  </div>
+  {image && (
+    <figure class="spread__fig">
+      <Photo src={image} alt={imageAlt} widths={[600, 900, 1200]} sizes="(min-width: 900px) 36vw, 100vw" ratio={[4, 5]} loading="eager" fetchpriority="high" />
+    </figure>
+  )}
+</section>

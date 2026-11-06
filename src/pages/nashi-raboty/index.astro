@@ -1,0 +1,111 @@
+---
+// «Наши работы» — только реальные фотографии выполненных заказов (бриф: иллюстрации сюда не попадают).
+// Работы добавляются в CMS; пока их нет, страница закрыта от индексации и не показывается в меню.
+import Base from '../../layouts/Base.astro';
+import Spread from '../../components/Spread.astro';
+import Photo from '../../components/Photo.astro';
+import Colophon from '../../components/Colophon.astro';
+import { categoryBySlug } from '../../data/catalog.mjs';
+import { readJson } from '../../data/content.mjs';
+import { salon } from '../../data/site.mjs';
+import { breadcrumbs } from '../../data/schema.mjs';
+import { getWorks } from '../../data/works';
+
+const t = readJson('pages/raboty.json');
+const works = await getWorks();
+const trail = [{ name: 'Главная', path: '/' }, { name: 'Наши работы', path: '/nashi-raboty/' }];
+const date = (d: Date) => d.toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' });
+---
+<Base title={t.seo.title} description={t.seo.description} jsonLd={[breadcrumbs(trail)]} noindex={works.length === 0}>
+  <Spread trail={trail} label="Архив — Наши работы" folio="00" title={t.hero.title} accent={t.hero.titleAccent} lead={t.hero.lead} />
+
+  {works.length === 0 ? (
+    <section class="notice" aria-labelledby="soon-title">
+      <h2 id="soon-title">Раздел готовится</h2>
+      <p>Здесь будут фотографии реальных интерьеров, оформленных салоном. А пока посмотрите каталог или позвоните — дизайнер расскажет о похожих проектах.</p>
+      <div class="spread__actions">
+        <a class="btn btn--emerald" href={`tel:${salon.phones[0].tel}`}>Позвонить в салон</a>
+        <a class="btn btn--line" href="/katalog/">Каталог</a>
+      </div>
+    </section>
+  ) : (
+    <div class="works">
+      {works.map((w, wi) => (
+        <article class="work" id={w.id} data-folio={String(wi + 1).padStart(2, '0')} data-name={w.data.title} aria-labelledby={`${w.id}-title`}>
+          <div class="work__head">
+            <p class="label"><span class="tnum">{String(wi + 1).padStart(2, '0')}</span> — {date(w.data.date)}</p>
+            <h2 id={`${w.id}-title`}>{w.data.title}</h2>
+            {w.data.place && <p class="work__meta">{w.data.place}</p>}
+            {w.data.summary && <p class="work__text">{w.data.summary}</p>}
+            {w.data.categories.length > 0 && (
+              <p class="work__tags">
+                {w.data.categories.filter((s) => categoryBySlug[s]).map((s) => <a class="link" href={categoryBySlug[s].path}>{categoryBySlug[s].title}</a>)}
+              </p>
+            )}
+          </div>
+          <div class="work__photos">
+            {w.data.photos.map((p, pi) => (
+              <button type="button" data-lightbox={w.id} data-index={pi} data-caption={p.caption ?? ''} aria-label={`Открыть фото: ${p.alt}`}>
+                <Photo src={p.image} alt={p.alt} widths={[600, 1000, 1600]} sizes="(min-width: 900px) 56vw, 100vw" />
+              </button>
+            ))}
+          </div>
+        </article>
+      ))}
+    </div>
+  )}
+
+  <dialog class="lightbox" aria-label="Просмотр фотографий">
+    <div class="lightbox__top">
+      <span class="lightbox__count" aria-live="polite"></span>
+      <button class="icon-btn" type="button" data-close aria-label="Закрыть">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+    <div class="lightbox__stage"><img alt="" /></div>
+    <div class="lightbox__bottom">
+      <p class="lightbox__cap"></p>
+      <div class="lightbox__nav">
+        <button class="icon-btn" type="button" data-step="-1" aria-label="Предыдущее фото"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+        <button class="icon-btn" type="button" data-step="1" aria-label="Следующее фото"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+      </div>
+    </div>
+  </dialog>
+
+  <Colophon map={false} />
+</Base>
+
+<script>
+  // Просмотр на весь экран: стрелки, клавиатура (← → Esc) и свайп на телефоне
+  const box = document.querySelector<HTMLDialogElement>('.lightbox')!;
+  const img = box.querySelector('img')!;
+  const cap = box.querySelector('.lightbox__cap')!;
+  const count = box.querySelector('.lightbox__count')!;
+  let set: HTMLButtonElement[] = [], at = 0;
+
+  const show = (i: number) => {
+    at = (i + set.length) % set.length;
+    const thumb = set[at].querySelector('img')!;
+    img.src = thumb.currentSrc || thumb.src;
+    img.alt = thumb.alt;
+    cap.textContent = set[at].dataset.caption ?? '';
+    count.textContent = `${at + 1} из ${set.length}`;
+  };
+  document.querySelectorAll<HTMLButtonElement>('[data-lightbox]').forEach((b) => b.addEventListener('click', () => {
+    set = [...document.querySelectorAll<HTMLButtonElement>(`[data-lightbox="${b.dataset.lightbox}"]`)];
+    show(Number(b.dataset.index));
+    box.showModal();
+  }));
+  box.querySelector('[data-close]')!.addEventListener('click', () => box.close());
+  box.querySelectorAll<HTMLButtonElement>('[data-step]').forEach((b) => b.addEventListener('click', () => show(at + Number(b.dataset.step))));
+  box.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight') show(at + 1);
+    if (e.key === 'ArrowLeft') show(at - 1);
+  });
+  let x0 = 0;
+  box.addEventListener('touchstart', (e) => { x0 = e.touches[0].clientX; }, { passive: true });
+  box.addEventListener('touchend', (e) => {
+    const dx = e.changedTouches[0].clientX - x0;
+    if (Math.abs(dx) > 50) show(at + (dx < 0 ? 1 : -1));
+  });
+</script>

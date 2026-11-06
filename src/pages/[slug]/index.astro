@@ -1,152 +1,60 @@
 ---
+// Раздел каталога в стиле «Выпуск»: разворот, группы-рубрики с позициями (якоря сохранены), подборка, соседние разделы.
+// «Ткани» и «Услуги» — отдельные страницы со своей композицией.
 import Base from '../../layouts/Base.astro';
-import Art from '../../components/Art.astro';
-import Icon from '../../components/Icon.astro';
-import Breadcrumbs from '../../components/Breadcrumbs.astro';
-import CallBand from '../../components/CallBand.astro';
-import { categories, productCategories, featurePages } from '../../data/catalog.mjs';
+import Spread from '../../components/Spread.astro';
+import Entries from '../../components/Entries.astro';
+import Band from '../../components/Band.astro';
+import Colophon from '../../components/Colophon.astro';
+import { categories } from '../../data/catalog.mjs';
+import { readJson } from '../../data/content.mjs';
+import { salon } from '../../data/site.mjs';
 import { breadcrumbs, categoryService } from '../../data/schema.mjs';
-import { positions } from '../../data/plural.mjs';
 
 export function getStaticPaths() {
-  return categories.map((c) => ({ params: { slug: c.slug }, props: { cat: c } }));
+  return categories
+    .filter((c) => !['tkani', 'uslugi'].includes(c.slug))
+    .map((c) => ({ params: { slug: c.slug }, props: { cat: c } }));
 }
 
 const { cat } = Astro.props;
-const trail = [{ name: 'Главная', path: '/' }, { name: cat.title, path: cat.path }];
-const features = featurePages.filter((f) => f.parent === cat.slug);
-const total = cat.groups.reduce((n, g) => n + g.items.length, 0);
-// Соседние разделы для перелинковки
-const pool = cat.slug === 'uslugi' ? productCategories : categories.filter((c) => c.slug !== cat.slug);
-const start = Math.max(0, categories.indexOf(cat));
-const related = [...pool.slice(start), ...pool.slice(0, start)].slice(0, 3);
-
-const featureText = {
-  '/karnizy/lift-sistemy/': 'Карниз со шторами опускается на тросах — чтобы снимать и вешать шторы на высоких потолках.',
-  '/shtory-na-zakaz/blackout-i-dimout/': 'Чем отличается полное затемнение от приглушённого света и где применяется каждая ткань.',
-  '/uslugi/vyezd-dizajnera/': 'Как проходит визит дизайнера с образцами тканей и что подготовить к замеру.',
+const code = `Т-${String(cat.order).padStart(2, '0')}`;
+const trail = [
+  { name: 'Главная', path: '/' },
+  { name: 'Каталог', path: '/katalog/' },
+  { name: cat.title, path: cat.path },
+];
+// Подборки внутри разделов — отдельные страницы с собственным смыслом запроса
+const bands: Record<string, any> = {
+  karnizy: { ...readJson('pages/lift.json'), label: 'Механизмы', title: 'Лифт-системы', accent: 'для высоких потолков', href: '/karnizy/lift-sistemy/', link: 'Как устроены лифт-системы', textKey: 'lead' },
+  'shtory-na-zakaz': { ...readJson('pages/blackout.json'), label: 'Светозащита', title: 'Блэкаут', accent: 'и Dimout', href: '/shtory-na-zakaz/blackout-i-dimout/', link: 'Чем они отличаются', textKey: 'lead' },
 };
+const band = bands[cat.slug];
+const i = categories.indexOf(cat);
+const neighbours = [categories[i - 1], categories[i + 1]].filter(Boolean);
 ---
 <Base title={cat.seo.title} description={cat.seo.description} jsonLd={[breadcrumbs(trail), categoryService(cat)]}>
-  <section class="cat-hero">
-    <div class="container cat-hero__grid">
-      <div class="cat-hero__text">
-        <Breadcrumbs trail={trail} />
-        <p class="label">{positions(total)}</p>
-        <h1>{cat.title}</h1>
-        <p class="lead">{cat.intro}</p>
-        <nav class="cat-toc" aria-label="Подразделы">
-          <ul role="list">
-            {cat.groups.map((g, i) => <li><a href={`#g-${i + 1}`}>{g.title}</a></li>)}
-          </ul>
-        </nav>
-      </div>
-      <div class="cat-hero__art"><Art type={cat.art} /></div>
+  <Spread trail={trail} label={`${code} — Каталог`} folio={code} title={cat.title} lead={cat.intro} image={cat.image} imageAlt={cat.short}>
+    <a class="btn btn--emerald" href={`tel:${salon.phones[0].tel}`}>Позвонить в салон</a>
+    <a class="btn btn--line" href="/uslugi/vyezd-dizajnera/">Выезд дизайнера</a>
+  </Spread>
+
+  <Entries groups={cat.groups} section={cat.title} />
+
+  {band && (
+    <Band label={band.label} title={band.title} accent={band.accent} text={band[band.textKey]} href={band.href} link={band.link} image={band.image} imageAlt={band.imageAlt} />
+  )}
+
+  <section class="rubric" aria-labelledby="next-title">
+    <div class="rubric__head">
+      <p class="label">Каталог</p>
+      <h2 id="next-title">Рядом <i>в каталоге</i></h2>
+    </div>
+    <div class="rubric__body pointers">
+      {neighbours.map((n) => <a href={n.path}>{n.title} <span aria-hidden="true">→</span></a>)}
+      <a href="/katalog/">Все разделы каталога <span aria-hidden="true">→</span></a>
     </div>
   </section>
 
-  {features.map((f) => (
-    <div class="container">
-      <a class="feature-link on-dark" href={f.path}>
-        <span class="label">Отдельная страница</span>
-        <span class="feature-link__title display">{f.title}</span>
-        <span class="feature-link__text">{featureText[f.path]}</span>
-        <span class="feature-link__arrow" aria-hidden="true"><Icon name="arrow" /></span>
-      </a>
-    </div>
-  ))}
-
-  <div class="container cat-body">
-    {cat.groups.map((g, gi) => (
-      <section class="group" id={`g-${gi + 1}`} aria-labelledby={`g-${gi + 1}-t`}>
-        <h2 class="group__title" id={`g-${gi + 1}-t`}>{g.title}</h2>
-        <ul role="list" class="items">
-          {g.items.map((it, ii) => (
-            <li class="item" id={it.id} data-reveal style={`--i:${ii % 4}`}>
-              <h3 class="item__name">{it.name}</h3>
-              <p class="item__text">{it.text}</p>
-              {it.id === 'lift-sistemy' && <a class="link" href="/karnizy/lift-sistemy/">Как это работает <Icon name="arrow" /></a>}
-              {(it.id === 'blackout' || it.id === 'dimout') && cat.slug === 'shtory-na-zakaz' && <a class="link" href="/shtory-na-zakaz/blackout-i-dimout/">Блэкаут или Dimout? <Icon name="arrow" /></a>}
-              {it.id === 'vyezd-na-zamer' && <a class="link" href="/uslugi/vyezd-dizajnera/">Как проходит выезд <Icon name="arrow" /></a>}
-            </li>
-          ))}
-        </ul>
-      </section>
-    ))}
-  </div>
-
-  <CallBand />
-
-  <section class="section related" aria-labelledby="related-title">
-    <div class="container">
-      <h2 id="related-title" class="related__title">Другие разделы</h2>
-      <ul role="list" class="related__list">
-        {related.map((c) => (
-          <li>
-            <a href={c.path} class="related__card">
-              <span class="related__art"><Art type={c.art} plain /></span>
-              <span class="related__name">{c.title}</span>
-              <span class="small muted">{c.short}</span>
-            </a>
-          </li>
-        ))}
-      </ul>
-    </div>
-  </section>
+  <Colophon map={false} />
 </Base>
-
-<style>
-  .cat-hero { padding-block: var(--space-3) var(--space-8); }
-  .cat-hero__grid { display: grid; gap: var(--space-6); }
-  .cat-hero__text { display: grid; gap: var(--space-4); align-content: start; }
-  .cat-hero__art { max-width: 16rem; width: 60%; }
-  .cat-toc ul { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-3); }
-  .cat-toc a {
-    display: inline-flex; align-items: center; min-height: 2.5rem; padding: 0.25rem 0.9rem;
-    border: 1px solid var(--color-line-strong); border-radius: var(--radius-xs);
-    font-size: 0.875rem; font-weight: 500; text-decoration: none;
-    transition: background-color var(--dur-fast), color var(--dur-fast), border-color var(--dur-fast);
-  }
-  .cat-toc a:hover { background: var(--color-primary); color: var(--color-on-primary); border-color: var(--color-primary); }
-  @media (min-width: 1024px) {
-    .cat-hero { padding-bottom: var(--space-9); }
-    .cat-hero__grid { grid-template-columns: 8fr 4fr; gap: var(--space-9); align-items: end; }
-    .cat-hero__art { width: 100%; max-width: 22rem; justify-self: end; }
-  }
-
-  .feature-link {
-    position: relative; display: grid; gap: var(--space-2);
-    padding: var(--space-6) calc(var(--space-6) + 3rem) var(--space-6) var(--space-6);
-    border-radius: var(--radius-md); text-decoration: none; margin-bottom: var(--space-7);
-  }
-  .feature-link__title { font-size: var(--fs-h3); }
-  .feature-link__text { color: var(--color-text-on-dark-muted); max-width: 40rem; }
-  .feature-link__arrow { position: absolute; right: var(--space-5); top: 50%; translate: 0 -50%; display: grid; place-items: center; width: 48px; height: 48px; border: 1px solid var(--color-accent-on-dark); border-radius: 50%; color: var(--color-accent-on-dark); transition: background-color var(--dur-base), color var(--dur-base); }
-  .feature-link:hover .feature-link__arrow { background: var(--color-accent); color: var(--color-on-accent); }
-
-  .cat-body { display: grid; gap: var(--space-8); padding-bottom: var(--space-9); }
-  .group { display: grid; gap: var(--space-5); }
-  .group__title { font-size: var(--fs-h3); font-weight: 600; padding-bottom: var(--space-4); border-bottom: 1px solid var(--color-hairline-gold); }
-  .items { display: grid; }
-  .item { display: grid; gap: var(--space-2); align-content: start; padding-block: var(--space-5); border-bottom: 1px solid var(--color-line); scroll-margin-top: calc(var(--header-h) + 1.5rem); }
-  .item:target { background: linear-gradient(90deg, var(--color-surface), transparent); box-shadow: inset 2px 0 0 var(--color-hairline-gold); padding-left: var(--space-4); }
-  .item__name { font-family: var(--font-body); font-size: var(--fs-h4); font-weight: 600; line-height: 1.35; }
-  .item__text { color: var(--color-text-muted); max-width: 36rem; }
-  .item .link { justify-self: start; margin-top: var(--space-1); }
-  @media (min-width: 768px) {
-    .items { grid-template-columns: 1fr 1fr; column-gap: var(--space-7); }
-  }
-  @media (min-width: 1024px) {
-    .group { grid-template-columns: 4fr 8fr; gap: var(--space-7); align-items: start; }
-    .group__title { position: sticky; top: calc(var(--header-h) + 1.5rem); border-bottom: 0; padding-bottom: 0; padding-top: var(--space-5); }
-    .group__title::after { content: ''; display: block; width: 3rem; height: 1px; background: var(--color-hairline-gold); margin-top: var(--space-4); }
-  }
-
-  .related__title { font-size: var(--fs-h3); margin-bottom: var(--space-6); }
-  .related__list { display: grid; gap: var(--space-5); }
-  .related__card { display: grid; grid-template-columns: 5rem 1fr; grid-template-rows: auto 1fr; gap: 0.25rem var(--space-4); text-decoration: none; align-items: start; }
-  .related__art { grid-row: span 2; border-radius: var(--radius-sm); overflow: hidden; }
-  .related__name { font-weight: 600; font-size: var(--fs-h4); line-height: 1.3; }
-  .related__card:hover .related__name { color: var(--color-primary); text-decoration: underline; text-decoration-color: var(--color-hairline-gold); text-underline-offset: 4px; }
-  @media (min-width: 768px) { .related__list { grid-template-columns: repeat(3, 1fr); } }
-</style>

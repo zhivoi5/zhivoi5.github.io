@@ -1,25 +1,20 @@
 ---
 import Base from '../layouts/Base.astro';
-import Icon from '../components/Icon.astro';
-import { productCategories } from '../data/catalog.mjs';
+import Spread from '../components/Spread.astro';
+import { categories } from '../data/catalog.mjs';
+import { salon } from '../data/site.mjs';
 ---
 <Base title="Страница не найдена | Текстиль Дизайн" description="Такой страницы на сайте салона штор «Текстиль Дизайн» нет." noindex>
-  <section class="section">
-    <div class="container nf">
-      <p class="label">Ошибка 404</p>
-      <h1>Такой страницы нет</h1>
-      <p class="lead">Возможно, адрес изменился. Начните с главной или выберите раздел каталога.</p>
-      <a class="btn" href="/">На главную <Icon name="arrow" /></a>
-      <ul role="list" class="nf__list">
-        {productCategories.map((c) => <li><a class="link" href={c.path}>{c.title}</a></li>)}
-        <li><a class="link" href="/uslugi/">Услуги</a></li>
-        <li><a class="link" href="/kontakty/">Контакты</a></li>
-      </ul>
+  <Spread trail={[{ name: 'Главная', path: '/' }, { name: 'Страница не найдена', path: '/404/' }]} label="Ошибка 404" folio="404"
+    title="Такой страницы" accent="нет" lead="Возможно, адрес изменился. Начните с главной или выберите раздел каталога.">
+    <a class="btn btn--emerald" href="/">На главную</a>
+    <a class="btn btn--line" href={`tel:${salon.phones[0].tel}`}>Позвонить в салон</a>
+  </Spread>
+  <section class="rubric" aria-labelledby="nf-title">
+    <div class="rubric__head"><p class="label">Каталог</p><h2 id="nf-title">Разделы <i>салона</i></h2></div>
+    <div class="rubric__body pointers">
+      {categories.map((c) => <a href={c.path}>{c.title} <span aria-hidden="true">→</span></a>)}
+      <a href="/kontakty/">Контакты <span aria-hidden="true">→</span></a>
     </div>
   </section>
 </Base>
-
-<style>
-  .nf { display: grid; gap: var(--space-5); justify-items: start; }
-  .nf__list { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-6); margin-top: var(--space-5); }
-</style>

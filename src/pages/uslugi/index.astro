@@ -1,0 +1,60 @@
+---
+// «Услуги»: разворот, выезд дизайнера как первый шаг, все услуги по группам (якоря сохранены), этапы, условия.
+import Base from '../../layouts/Base.astro';
+import Spread from '../../components/Spread.astro';
+import Entries from '../../components/Entries.astro';
+import Steps from '../../components/Steps.astro';
+import Terms from '../../components/Terms.astro';
+import Colophon from '../../components/Colophon.astro';
+import { categoryBySlug } from '../../data/catalog.mjs';
+import { readJson } from '../../data/content.mjs';
+import { salon } from '../../data/site.mjs';
+import { breadcrumbs, categoryService } from '../../data/schema.mjs';
+
+const cat = categoryBySlug['uslugi'];
+const t = readJson('pages/uslugi.json');
+const vyezd = readJson('pages/vyezd.json');
+const code = `Т-${String(cat.order).padStart(2, '0')}`;
+const trail = [{ name: 'Главная', path: '/' }, { name: cat.title, path: cat.path }];
+---
+<Base title={cat.seo.title} description={cat.seo.description} jsonLd={[breadcrumbs(trail), categoryService(cat)]}>
+  <Spread trail={trail} label={`${code} — Ателье`} folio={code} title={t.hero.title} accent={t.hero.titleAccent} lead={t.hero.lead} image={t.hero.image} imageAlt={t.hero.imageAlt}>
+    <a class="btn btn--emerald" href={`tel:${salon.phones[0].tel}`}>Позвонить в салон</a>
+  </Spread>
+
+  <section class="rubric" data-folio="00" data-name="Начало" aria-labelledby="start-title">
+    <div class="rubric__head">
+      <p class="label">Начните с этого</p>
+      <h2 id="start-title" class="visually-hidden">Выезд дизайнера</h2>
+    </div>
+    <div class="rubric__body">
+      <a class="feature" href="/uslugi/vyezd-dizajnera/">
+        <span class="feature__kicker">Первый шаг</span>
+        <span class="feature__title">{vyezd.hero.title} {vyezd.hero.titleAccent}</span>
+        <span class="feature__text">{vyezd.hero.lead}</span>
+        <span class="feature__arrow" aria-hidden="true">→</span>
+      </a>
+    </div>
+  </section>
+
+  <Entries groups={cat.groups} section={cat.title} />
+
+  <section class="atelier atelier--plain" data-folio="—" data-name="Этапы" aria-labelledby="steps-title">
+    <h2 id="steps-title" class="steps-title">Как проходит <i>заказ</i></h2>
+    <Steps steps={t.steps} />
+    <Terms />
+  </section>
+
+  <Colophon map={false} />
+</Base>
+
+<style>
+  /* Этапы и условия на странице услуг — та же сетка «Ателье», но без кадра */
+  .atelier--plain { border-top: 1px solid var(--line); }
+  .steps-title { font-size: clamp(2rem, 1rem + 3vw, 3.5rem); }
+  .steps-title i { color: var(--gold-ink); }
+  @media (min-width: 900px) {
+    .atelier--plain { row-gap: 48px; padding-block: 112px; }
+    .steps-title { grid-column: 1 / -1; }
+  }
+</style>

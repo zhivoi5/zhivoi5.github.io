@@ -3,14 +3,15 @@
 import { salon } from '../data/site.mjs';
 import MapView from './MapView.astro';
 
-interface Props { folio?: string; level?: 'h1' | 'h2'; map?: boolean }
-const { folio = '05', level = 'h2', map = true } = Astro.props;
+// num — номер рубрики на главной; на внутренних страницах блок без номера
+interface Props { num?: string; level?: 'h1' | 'h2'; map?: boolean }
+const { num, level = 'h2', map = true } = Astro.props;
 const Heading = level;
 const [street, house] = salon.address.street.split(/,\s*(?=[^,]+$)/);
 ---
-<section class="colophon" id="contacts" data-folio={folio} data-name="Контакты" data-hide-bar aria-labelledby="contacts-title">
+<section class="colophon" id="contacts" data-folio={num ?? '—'} data-name="Контакты" data-hide-bar aria-labelledby="contacts-title">
   <div class="colophon__text">
-    <p class="label label--gold"><span class="tnum">{folio}</span> — Контакты</p>
+    <p class="label label--gold">{num && <><span class="tnum">{num}</span> — </>}Контакты</p>
     <Heading id="contacts-title" class="colophon__addr"><span class="colophon__city">{salon.address.city}, {salon.address.district.replace('район ', '')}</span>{street}, <i>{house}</i></Heading>
     <dl class="passport">
       {salon.phones.map((p, i) => (
