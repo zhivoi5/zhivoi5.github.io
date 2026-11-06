@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Текстиль Дизайн — студия текстильного оформления интерьеров в Коммунарке</title>
+<!-- География живёт в метаданных и разметке, а не в рекламных формулировках -->
+<meta name="description" content="Студия текстильного оформления интерьеров: пошив штор и тюля по индивидуальным размерам, карнизы, жалюзи, выезд дизайнера с образцами, монтаж. Москва, Коммунарка, проспект Куприна, 11к2.">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "HomeGoodsStore",
+  "name": "Текстиль Дизайн",
+  "description": "Салон штор и текстильного дизайна интерьеров",
+  "address": { "@type": "PostalAddress", "streetAddress": "проспект Куприна, 11к2", "addressLocality": "Москва", "addressRegion": "Новомосковский административный округ, Коммунарка", "addressCountry": "RU" },
+  "geo": { "@type": "GeoCoordinates", "latitude": 55.536858, "longitude": 37.472782 },
+  "telephone": ["+79154449692", "+79851663567"],
+  "email": "TD.salon@mail.ru",
+  "openingHours": "Mo-Su 12:00-20:00",
+  "paymentAccepted": "Банковская карта, наличные, QR-код"
+}
+</script>
+<link rel="preconnect" href="https://images.unsplash.com">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip" href="#main">Перейти к содержимому</a>
+
+<!-- Шапка: прозрачная над обложкой, молочная после неё -->
+<header class="hdr" data-state="over">
+  <a class="hdr__logo" href="#top" aria-label="Текстиль Дизайн — в начало">
+    <img class="hdr__mono hdr__mono--light" src="../public/brand/monogram-ivory.svg" alt="" width="40" height="36">
+    <img class="hdr__mono hdr__mono--dark" src="../public/brand/monogram-emerald.svg" alt="" width="40" height="36">
+    <span class="hdr__word">Текстиль Дизайн</span>
+  </a>
+  <nav class="hdr__nav" aria-label="Основная навигация">
+    <a href="#catalog">Каталог</a>
+    <a href="#services">Услуги</a>
+    <a href="#intro">О салоне</a>
+    <a href="#contacts">Контакты</a>
+  </nav>
+  <div class="hdr__aside">
+    <span class="hdr__hours">Ежедневно 12–20</span>
+    <a class="pill pill--champagne" href="tel:+79154449692"><span class="tnum">+7 915 444-96-92</span></a>
+    <a class="icon-btn hdr__call" href="tel:+79154449692" aria-label="Позвонить в салон">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>
+    </a>
+    <button class="icon-btn hdr__burger" type="button" aria-label="Открыть меню" aria-haspopup="dialog" data-open-menu>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h16M4 16h16"/></svg>
+    </button>
+  </div>
+</header>
+
+<dialog class="menu" aria-label="Меню">
+  <div class="menu__top">
+    <span class="menu__word">Текстиль Дизайн</span>
+    <button class="icon-btn" type="button" aria-label="Закрыть меню" data-close-menu autofocus>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+    </button>
+  </div>
+  <nav class="menu__nav" aria-label="Меню">
+    <a href="#catalog" data-close-menu><span class="tnum">02</span>Каталог</a>
+    <a href="#services" data-close-menu><span class="tnum">04</span>Услуги</a>
+    <a href="#intro" data-close-menu><span class="tnum">01</span>О салоне</a>
+    <a href="#contacts" data-close-menu><span class="tnum">05</span>Контакты</a>
+  </nav>
+  <div class="menu__contacts">
+    <p>Москва, проспект Куприна, 11к2 · ежедневно 12:00–20:00</p>
+    <a href="tel:+79154449692" class="tnum">+7 915 444-96-92 <small>салон</small></a>
+    <a href="tel:+79851663567" class="tnum">+7 985 166-35-67 <small>Татьяна, дизайнер</small></a>
+    <div class="menu__actions">
+      <a class="btn btn--emerald" href="tel:+79154449692">Позвонить</a>
+      <a class="btn btn--line" href="https://yandex.ru/maps/?rtext=~55.536858%2C37.472782&amp;rtt=auto" target="_blank" rel="noopener">Маршрут</a>
+    </div>
+  </div>
+</dialog>
+
+<!-- Колонтитул: номер текущей рубрики, только на широких экранах -->
+<p class="folio" aria-hidden="true"><span class="folio__num tnum">00</span><span class="folio__name">Обложка</span></p>
+
+<main id="main">
+
+<!-- 00 — Обложка -->
+<section class="cover" id="top" data-folio="00" data-name="Обложка" aria-labelledby="h1">
+  <img class="cover__img" src="media/hero-poster.jpg?w=2400" fetchpriority="high"
+    alt="Гостиная с изумрудными бархатными портьерами у окна в пол">
+  <!-- Живые шторы: ролик подключается скриптом только на широких экранах и без режима экономии -->
+  <video class="cover__video" muted loop playsinline preload="none" aria-hidden="true"
+    data-src-webm="media/hero-loop.webm" data-src-mp4="media/hero-loop.mp4"></video>
+  <div class="cover__shade" aria-hidden="true"></div>
+  <button class="cover__pause" type="button" aria-pressed="false">Пауза</button>
+
+  <p class="cover__mast" aria-hidden="true"><span>Текстиль</span><span><i>Дизайн</i></span></p>
+
+  <div class="cover__foot">
+    <ul class="perks" role="list" aria-label="Преимущества салона">
+      <li>Пошив по индивидуальным размерам<small>Шторы любой сложности, в том числе римские</small></li>
+      <li>Выезд дизайнера с образцами<small>Выбор ткани при вашем свете и рядом с вашей мебелью</small></li>
+      <li>Монтаж и навеска<small>Карнизы, жалюзи и солнцезащитные системы</small></li>
+    </ul>
+    <div class="cover__lead">
+      <h1 id="h1">Студия текстильного оформления интерьеров</h1>
+      <p>Шторы, тюль и римские шторы на заказ, карнизы и электрокарнизы, жалюзи и домашний текстиль — от подбора ткани до навески.</p>
+      <div class="cover__actions">
+        <a class="btn btn--ivory" href="tel:+79154449692">Позвонить в салон</a>
+        <a class="btn btn--ghost-light" href="#catalog">Каталог <span aria-hidden="true">↓</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 01 — Вступление: кадр заходит на обложку и связывает экраны -->
+<section class="intro" id="intro" data-folio="01" data-name="Вступление" aria-labelledby="intro-title">
+  <figure class="intro__fig">
+    <img src="media/intro.jpg?w=1100" width="1100" height="1375" loading="lazy"
+      alt="Светлая комната: арочное окно, лёгкий тюль, кресло и растение">
+    <figcaption>Арочное окно. Лёгкий тюль.</figcaption>
+  </figure>
+
+  <div class="intro__text">
+    <p class="label"><span class="tnum">01</span> — Вступление</p>
+    <h2 id="intro-title" class="visually-hidden">О салоне</h2>
+    <blockquote class="quote">
+      <p>Интерьер как на&nbsp;фото из журнала начинается с&nbsp;<i>правильных</i> штор</p>
+    </blockquote>
+    <p class="intro__body">«Текстиль Дизайн» — салон штор и текстильного дизайна. Мы шьём шторы любой сложности точно под размер окна, подбираем ткани и карнизы, включая электрокарнизы, устанавливаем жалюзи и&nbsp;другие солнцезащитные системы, а после — ухаживаем за изделиями: химчистка, отпаривание, ремонт.</p>
+  </div>
+</section>
+
+<!-- 02 — Каталог-оглавление -->
+<section class="index" id="catalog" data-folio="02" data-name="Каталог" aria-labelledby="index-title">
+  <header class="index__head">
+    <p class="label"><span class="tnum">02</span> — Каталог</p>
+    <h2 id="index-title">Всё, что делает окно <i>завершённым</i></h2>
+  </header>
+
+  <div class="index__body">
+    <ol class="toc" role="list">
+      <li><a href="/shtory-na-zakaz/" data-i="0">
+        <img class="toc__thumb" src="media/cat-shtory.jpg?w=160" alt="" width="64" height="80" loading="lazy">
+        <span class="toc__num tnum">01</span>
+        <span class="toc__main"><span class="toc__title">Шторы на заказ</span><span class="toc__desc">Индивидуальный пошив по размерам окна: от лёгкого льна до бархата и жаккарда.</span></span>
+        <span class="toc__go" aria-hidden="true">→</span></a></li>
+      <li><a href="/tyul/" data-i="1">
+        <img class="toc__thumb" src="media/cat-tyul.jpg?w=160" alt="" width="64" height="80" loading="lazy">
+        <span class="toc__num tnum">02</span>
+        <span class="toc__main"><span class="toc__title">Тюль</span><span class="toc__desc">Вуаль, органза, сетка, лён и тюль с вышивкой — пошив по размерам окна.</span></span>
+        <span class="toc__go" aria-hidden="true">→</span></a></li>
+      <li><a href="/rimskie-shtory/" data-i="2">
+        <img class="toc__thumb" src="media/cat-rimskie.jpg?w=160" alt="" width="64" height="80" loading="lazy">
+        <span class="toc__num tnum">03</span>
+        <span class="toc__main"><span class="toc__title">Римские шторы</span><span class="toc__desc">Ткань собирается ровными горизонтальными складками. Блэкаут, «день-ночь», двойные.</span></span>
+        <span class="toc__go" aria-hidden="true">→</span></a></li>
+      <li><a href="/rulonnye-shtory/" data-i="3">
+        <img class="toc__thumb" src="media/cat-rulonnye.jpg?w=160" alt="" width="64" height="80" loading="lazy">
+        <span class="toc__num tnum">04</span>
+        <span class="toc__main"><span class="toc__title">Рулонные шторы</span><span class="toc__desc">Блэкаут, «день-ночь», «зебра», кассетные системы — на пластиковые окна и балконы.</span></span>
+        <span class="toc__go" aria-hidden="true">→</span></a></li>
+      <li><a href="/zhalyuzi-i-plisse/" data-i="4">
+        <img class="toc__thumb" src="media/cat-zhalyuzi.jpg?w=160" alt="" width="64" height="80" loading="lazy">
+        <span class="toc__num tnum">05</span>
+        <span class="toc__main"><span class="toc__title">Жалюзи и плиссе</span><span class="toc__desc">Вертикальные, горизонтальные, деревянные жалюзи и плиссе — солнцезащита под стиль интерьера.</span></span>
+        <span class="toc__go" aria-hidden="true">→</span></a></li>
+      <li><a href="/karnizy/" data-i="5">
+        <img class="toc__thumb" src="media/cat-karnizy.jpg?w=160" alt="" width="64" height="80" loading="lazy">
+        <span class="toc__num tnum">06</span>
+        <span class="toc__main"><span class="toc__title">Карнизы и механизмы</span><span class="toc__desc">Потолочные, настенные, эркерные и гибкие карнизы, карнизы с подсветкой, электрокарнизы и&nbsp;лифт-системы для высоких потолков.</span></span>
+        <span class="toc__go" aria-hidden="true">→</span></a></li>
+      <li><a href="/tkani/" data-i="6">
+        <img class="toc__thumb" src="media/cat-tkani.jpg?w=160" alt="" width="64" height="80" loading="lazy">
+        <span class="toc__num tnum">07</span>
+        <span class="toc__main"><span class="toc__title">Ткани для штор</span><span class="toc__desc">Портьерные ткани, блэкаут, ткани для тюля, турецкие ткани.</span></span>
+        <span class="toc__go" aria-hidden="true">→</span></a></li>
+      <li><a href="/tekstil-i-dekor/" data-i="7">
+        <img class="toc__thumb" src="media/cat-tekstil.jpg?w=160" alt="" width="64" height="80" loading="lazy">
+        <span class="toc__num tnum">08</span>
+        <span class="toc__main"><span class="toc__title">Текстиль и декор</span><span class="toc__desc">Подушки, покрывала, скатерти, постельное бельё и отделка для штор.</span></span>
+        <span class="toc__go" aria-hidden="true">→</span></a></li>
+      <li><a href="/uslugi/" data-i="8">
+        <img class="toc__thumb" src="media/cat-uslugi.jpg?w=160" alt="" width="64" height="80" loading="lazy">
+        <span class="toc__num tnum">09</span>
+        <span class="toc__main"><span class="toc__title">Услуги</span><span class="toc__desc">Консультация, замер, дизайн-проект, монтаж, навеска, ремонт и уход за шторами.</span></span>
+        <span class="toc__go" aria-hidden="true">→</span></a></li>
+    </ol>
+
+    <!-- Превью раздела: декоративное, меняется при наведении и фокусе -->
+    <div class="preview" aria-hidden="true">
+      <div class="preview__frame">
+        <img class="is-on" src="media/cat-shtory.jpg?w=900" alt="" loading="lazy">
+        <img src="media/cat-tyul.jpg?w=900" alt="" loading="lazy">
+        <img src="media/cat-rimskie.jpg?w=900" alt="" loading="lazy">
+        <img src="media/cat-rulonnye.jpg?w=900" alt="" loading="lazy">
+        <img src="media/cat-zhalyuzi.jpg?w=900" alt="" loading="lazy">
+        <img src="media/cat-karnizy.jpg?w=900" alt="" loading="lazy">
+        <img src="media/cat-tkani.jpg?w=900" alt="" loading="lazy">
+        <img src="media/cat-tekstil.jpg?w=900" alt="" loading="lazy">
+        <img src="media/cat-uslugi.jpg?w=900" alt="" loading="lazy">
+      </div>
+      <p class="preview__cap" data-preview-name>Шторы на заказ</p>
+    </div>
+  </div>
+</section>
+
+<!-- 03 — Материал: макро ткани во весь экран + «этикетка образца» -->
+<section class="material" id="material" data-folio="03" data-name="Материал" aria-labelledby="material-title">
+  <img class="material__img" src="media/material.jpg?w=2000" loading="lazy"
+    alt="Изумрудный бархат крупным планом: мягкие складки и ворс">
+  <div class="material__shade" aria-hidden="true"></div>
+  <div class="material__inner">
+    <p class="label label--gold"><span class="tnum">03</span> — Материал</p>
+    <h2 id="material-title" class="material__title">Сначала<br><i>ткань</i></h2>
+    <p class="material__body">Цвет и фактура окна начинаются с полотна. Дизайнер привезёт образцы к вам, чтобы выбрать ткань при вашем свете, рядом с вашей мебелью.</p>
+  </div>
+  <aside class="swatch" aria-label="Раздел каталога: ткани для штор">
+    <p class="swatch__code tnum">Т-07</p>
+    <p class="swatch__title">Ткани для штор</p>
+    <ul role="list">
+      <li>Портьерные ткани</li>
+      <li>Ткани блэкаут</li>
+      <li>Ткани для тюля</li>
+      <li>Турецкие ткани</li>
+    </ul>
+    <a class="link" href="/tkani/">Раздел «Ткани» <span aria-hidden="true">→</span></a>
+  </aside>
+</section>
+
+<!-- 04 — Ателье: услуги, этапы и условия -->
+<section class="atelier" id="services" data-folio="04" data-name="Ателье" aria-labelledby="atelier-title">
+  <figure class="atelier__fig">
+    <img src="media/atelier.jpg?w=1100" width="1100" height="1400" loading="lazy"
+      alt="Руки дизайнера раскладывают образцы тканей на столе">
+    <figcaption>Подбор тканей и фактур.</figcaption>
+  </figure>
+
+  <div class="atelier__text">
+    <p class="label"><span class="tnum">04</span> — Ателье</p>
+    <h2 id="atelier-title">От первого звонка <i>до навески</i></h2>
+
+    <a class="feature" href="/uslugi/vyezd-dizajnera/">
+      <span class="feature__kicker">Начните с этого</span>
+      <span class="feature__title">Выезд дизайнера на замер</span>
+      <span class="feature__text">С образцами тканей и точными замерами окон — выбор прямо в вашем интерьере.</span>
+      <span class="feature__arrow" aria-hidden="true">→</span>
+    </a>
+
+    <dl class="groups">
+      <div>
+        <dt>Дизайн и проект</dt>
+        <dd>Шторы под ключ · Консультация дизайнера · Дизайн и визуализация штор · Дизайн-проект штор · Текстильный дизайн интерьера</dd>
+      </div>
+      <div>
+        <dt>Монтаж и установка</dt>
+        <dd>Монтаж карнизов · Установка жалюзи и рулонных штор · Навеска и замена штор</dd>
+      </div>
+      <div>
+        <dt>Ремонт и уход</dt>
+        <dd>Подшив и укорачивание · Ремонт · Химчистка · Отпаривание штор</dd>
+      </div>
+    </dl>
+    <a class="link" href="/uslugi/">Все услуги <span aria-hidden="true">→</span></a>
+  </div>
+
+  <ol class="steps" role="list" aria-label="Как проходит заказ">
+    <li><span class="tnum">01</span><b>Консультация</b>По телефону или в салоне</li>
+    <li><span class="tnum">02</span><b>Выезд дизайнера</b>Образцы и замеры</li>
+    <li><span class="tnum">03</span><b>Подбор</b>Ткани, карнизы, конструкция</li>
+    <li><span class="tnum">04</span><b>Пошив</b>По размерам вашего окна</li>
+    <li><span class="tnum">05</span><b>Монтаж и навеска</b>Карнизы, системы, шторы</li>
+  </ol>
+
+  <div class="terms">
+    <p class="terms__title">Оплата и условия</p>
+    <p>Банковской картой, наличными или по <span class="nw">QR-коду</span>. Доступна <strong>рассрочка на 6 месяцев</strong>.</p>
+  </div>
+</section>
+
+<!-- 05 — Контакты и карта -->
+<section class="colophon" id="contacts" data-folio="05" data-name="Контакты" aria-labelledby="contacts-title">
+  <div class="colophon__text">
+    <p class="label label--gold"><span class="tnum">05</span> — Контакты</p>
+    <h2 id="contacts-title" class="colophon__addr"><span class="colophon__city">Москва, Коммунарка</span>проспект Куприна, <i>11к2</i></h2>
+    <dl class="passport">
+      <div><dt>Салон</dt><dd><a class="tnum" href="tel:+79154449692">+7 915 444-96-92</a></dd></div>
+      <div><dt>Татьяна, дизайнер</dt><dd><a class="tnum" href="tel:+79851663567">+7 985 166-35-67</a></dd></div>
+      <div><dt>Почта</dt><dd><a href="mailto:TD.salon@mail.ru">TD.salon@mail.ru</a></dd></div>
+      <div><dt>Часы</dt><dd>Ежедневно <span class="nw">12:00–20:00</span></dd></div>
+    </dl>
+    <div class="colophon__actions">
+      <a class="btn btn--gold" href="tel:+79154449692">Позвонить в салон</a>
+      <a class="btn btn--ghost-light" href="https://yandex.ru/maps/?rtext=~55.536858%2C37.472782&amp;rtt=auto" target="_blank" rel="noopener">Построить маршрут</a>
+    </div>
+  </div>
+  <div class="map">
+    <div class="map__canvas" id="map" role="region" aria-label="Карта: салон на проспекте Куприна, 11к2"></div>
+    <p class="map__routes">
+      <a href="https://yandex.ru/maps/?rtext=~55.536858%2C37.472782&amp;rtt=auto" target="_blank" rel="noopener">Маршрут в Яндекс Картах</a>
+      <a href="https://www.google.com/maps/dir/?api=1&amp;destination=55.536858%2C37.472782" target="_blank" rel="noopener">Маршрут в Google Картах</a>
+    </p>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <img src="../public/brand/monogram-gold.svg" alt="" width="44" height="40">
+  <p>«Текстиль Дизайн» — салон штор и текстильного дизайна.</p>
+  <p class="foot__note">Фотографии на сайте — иллюстрации интерьеров, а не выполненные заказы салона.</p>
+</footer>
+
+<nav class="bar" aria-label="Быстрая связь">
+  <a href="tel:+79154449692">Позвонить</a>
+  <a href="https://yandex.ru/maps/?rtext=~55.536858%2C37.472782&amp;rtt=auto" target="_blank" rel="noopener">Маршрут</a>
+</nav>
+
+<script>
+(() => {
+  const hdr = document.querySelector('.hdr');
+  const cover = document.querySelector('.cover');
+  const bar = document.querySelector('.bar');
+  const contacts = document.querySelector('#contacts');
+
+  // Шапка прозрачна только в самом начале; нижняя панель — между обложкой и контактами
+  let coverVisible = true, contactsVisible = false;
+  const sync = () => {
+    hdr.dataset.state = scrollY < 40 ? 'over' : 'solid';
+    bar.classList.toggle('is-on', !coverVisible && !contactsVisible);
+  };
+  addEventListener('scroll', sync, { passive: true });
+  new IntersectionObserver(([e]) => { coverVisible = e.isIntersecting; sync(); }, { rootMargin: '-72px 0px 0px 0px' }).observe(cover);
+  new IntersectionObserver(([e]) => { contactsVisible = e.isIntersecting; sync(); }).observe(contacts);
+
+  // Колонтитул: рубрика, которая занимает середину экрана
+  const num = document.querySelector('.folio__num'), name = document.querySelector('.folio__name');
+  const io = new IntersectionObserver((es) => es.forEach((e) => {
+    if (e.isIntersecting) { num.textContent = e.target.dataset.folio; name.textContent = e.target.dataset.name; }
+  }), { rootMargin: '-50% 0px -50% 0px' });
+  document.querySelectorAll('[data-folio]').forEach((s) => io.observe(s));
+
+  // Превью раздела в оглавлении
+  const frames = [...document.querySelectorAll('.preview__frame img')];
+  const pName = document.querySelector('[data-preview-name]');
+  document.querySelectorAll('.toc a').forEach((a) => {
+    const show = () => {
+      frames.forEach((f, j) => f.classList.toggle('is-on', j === +a.dataset.i));
+      pName.textContent = a.querySelector('.toc__title').textContent;
+    };
+    a.addEventListener('mouseenter', show);
+    a.addEventListener('focus', show);
+  });
+
+  // Мобильное меню
+  const menu = document.querySelector('.menu');
+  document.querySelector('[data-open-menu]').addEventListener('click', () => menu.showModal());
+  menu.querySelectorAll('[data-close-menu]').forEach((el) => el.addEventListener('click', () => menu.close()));
+
+  // Живые шторы: только широкий экран, без «уменьшить движение» и без экономии трафика.
+  // На телефоне остаётся постер — он же первая отрисовка (LCP) на любом устройстве.
+  const video = document.querySelector('.cover__video');
+  const pause = document.querySelector('.cover__pause');
+  const wantsVideo = matchMedia('(min-width: 900px) and (prefers-reduced-motion: no-preference)').matches
+    && !(navigator.connection && navigator.connection.saveData);
+  if (wantsVideo) {
+    for (const [attr, type] of [['srcWebm', 'video/webm'], ['srcMp4', 'video/mp4']]) {
+      const s = document.createElement('source');
+      s.src = video.dataset[attr]; s.type = type;
+      video.append(s);
+    }
+    video.addEventListener('playing', () => { video.classList.add('is-playing'); pause.classList.add('is-on'); }, { once: true });
+    video.load();
+    // Не тратим ресурсы, когда обложка вне экрана
+    new IntersectionObserver(([e]) => {
+      if (pause.getAttribute('aria-pressed') === 'true') return;
+      e.isIntersecting ? video.play().catch(() => {}) : video.pause();
+    }).observe(cover);
+    pause.addEventListener('click', () => {
+      const paused = pause.getAttribute('aria-pressed') === 'true';
+      pause.setAttribute('aria-pressed', String(!paused));
+      pause.textContent = paused ? 'Пауза' : 'Продолжить';
+      paused ? video.play() : video.pause();
+    });
+  }
+
+  // Карта: Leaflet подгружается, только когда контакты близко к экрану
+  const mapEl = document.getElementById('map');
+  new IntersectionObserver(([e], obs) => {
+    if (!e.isIntersecting) return;
+    obs.disconnect();
+    const css = document.createElement('link');
+    css.rel = 'stylesheet'; css.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+    document.head.append(css);
+    const js = document.createElement('script');
+    js.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+    js.onload = () => {
+      const at = [55.536858, 37.472782];
+      const touch = matchMedia('(pointer: coarse)').matches;
+      const map = L.map(mapEl, { center: at, zoom: 15, scrollWheelZoom: false, dragging: !touch, tap: false, zoomControl: !touch });
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      }).addTo(map);
+      L.marker(at, { icon: L.divIcon({ className: '', html: '<div class="pin"></div>', iconSize: [22, 22] }), title: 'Текстиль Дизайн' }).addTo(map);
+    };
+    document.head.append(js);
+  }, { rootMargin: '600px 0px' }).observe(mapEl);
+})();
+</script>
+</body>
+</html>
