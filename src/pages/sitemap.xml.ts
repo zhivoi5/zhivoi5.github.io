@@ -9,7 +9,7 @@ export const GET: APIRoute = async ({ site }) => {
     '/', '/katalog/',
     ...categories.map((c) => c.path),
     ...featurePages.map((f) => f.path),
-    ...(works.length ? ['/nashi-raboty/'] : []),
+    ...(works.length ? ['/works/'] : []),
     '/kontakty/',
   ];
   const lastmod = new Date().toISOString().slice(0, 10);

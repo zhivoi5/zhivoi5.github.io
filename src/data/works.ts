@@ -1,4 +1,5 @@
-// Опубликованные работы салона. Пока их нет, раздел не показывается в навигации и карте сайта.
+// Опубликованные работы салона (без черновиков). Пока их нет, страница показывает временное сообщение
+// и не попадает в карту сайта.
 import { readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { getCollection } from 'astro:content';
@@ -9,5 +10,6 @@ const hasFiles = () => readdirSync(dir, { recursive: true }).some((f) => String(
 
 export const getWorks = async () =>
   hasFiles()
-    ? (await getCollection('works', (w) => !w.data.draft)).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+    ? (await getCollection('works', (w) => !w.data.draft)).sort((a, b) =>
+        (a.data.order ?? Infinity) - (b.data.order ?? Infinity) || b.data.date.valueOf() - a.data.date.valueOf())
     : [];

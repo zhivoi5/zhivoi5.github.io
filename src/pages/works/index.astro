@@ -1,6 +1,6 @@
 ---
 // «Наши работы» — только реальные фотографии выполненных заказов (бриф: иллюстрации сюда не попадают).
-// Работы добавляются в CMS; пока их нет, страница закрыта от индексации и не показывается в меню.
+// Работы добавляются в CMS. Пока их нет, страница открывается с временным сообщением и закрыта от индексации.
 import Base from '../../layouts/Base.astro';
 import Spread from '../../components/Spread.astro';
 import Photo from '../../components/Photo.astro';
@@ -13,7 +13,7 @@ import { getWorks } from '../../data/works';
 
 const t = readJson('pages/raboty.json');
 const works = await getWorks();
-const trail = [{ name: 'Главная', path: '/' }, { name: 'Наши работы', path: '/nashi-raboty/' }];
+const trail = [{ name: 'Главная', path: '/' }, { name: 'Наши работы', path: '/works/' }];
 const date = (d: Date) => d.toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' });
 ---
 <Base title={t.seo.title} description={t.seo.description} jsonLd={[breadcrumbs(trail)]} noindex={works.length === 0}>
@@ -21,8 +21,8 @@ const date = (d: Date) => d.toLocaleDateString('ru-RU', { month: 'long', year: '
 
   {works.length === 0 ? (
     <section class="notice" aria-labelledby="soon-title">
-      <h2 id="soon-title">Раздел готовится</h2>
-      <p>Здесь будут фотографии реальных интерьеров, оформленных салоном. А пока посмотрите каталог или позвоните — дизайнер расскажет о похожих проектах.</p>
+      <h2 id="soon-title">{t.empty.title}</h2>
+      <p>{t.empty.text}</p>
       <div class="spread__actions">
         <a class="btn btn--emerald" href={`tel:${salon.phones[0].tel}`}>Позвонить в салон</a>
         <a class="btn btn--line" href="/katalog/">Каталог</a>

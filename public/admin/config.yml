@@ -45,11 +45,12 @@ collections:
     slug: '{{year}}-{{month}}-{{day}}-{{hour}}{{minute}}'
     media_folder: /src/assets/works
     public_folder: /src/assets/works
-    sortable_fields: [date, title]
+    sortable_fields: [order, date, title]
     summary: '{{title}} — {{date}}'
     fields:
       - { label: Название, name: title, widget: string, hint: 'Например: «Гостиная с изумрудными портьерами»' }
       - { label: Дата, name: date, widget: datetime, time_format: false, date_format: 'DD.MM.YYYY' }
+      - { label: Порядок в галерее, name: order, widget: number, value_type: int, min: 1, required: false, hint: '1 — первая работа на странице. Если не указать, работа встанет после пронумерованных; такие работы идут от новых к старым.' }
       - { label: Где, name: place, widget: string, required: false, hint: 'Например: «Квартира в Коммунарке». Без адресов и имён клиентов.' }
       - { label: Описание, name: summary, widget: text, required: false }
       - label: Фотографии
@@ -70,7 +71,7 @@ collections:
         display_fields: [title]
         multiple: true
         required: false
-      - { label: Черновик (не показывать на сайте), name: draft, widget: boolean, default: false }
+      - { label: Скрыть с сайта (черновик), name: draft, widget: boolean, default: false, hint: 'Включено — работа сохранена в CMS, но на сайте не показывается' }
 
   # ---------- Каталог ----------
   - name: catalog
@@ -244,6 +245,12 @@ collections:
         label: Наши работы (вступление)
         file: src/content/pages/raboty.json
         fields:
+          - label: Пока нет ни одной работы
+            name: empty
+            widget: object
+            fields:
+              - { label: Заголовок, name: title, widget: string }
+              - { label: Текст, name: text, widget: text }
           - label: Поисковики
             name: seo
             widget: object

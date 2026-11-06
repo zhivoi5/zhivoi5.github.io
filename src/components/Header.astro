@@ -1,18 +1,16 @@
 ---
 // Шапка «Выпуска». На главной (overlay) прозрачна над обложкой, на остальных страницах — молочная.
 import { salon } from '../data/site.mjs';
-import { getWorks } from '../data/works';
 
 interface Props { overlay?: boolean }
 const { overlay = false } = Astro.props;
 const main = salon.phones[0];
-const hasWorks = (await getWorks()).length > 0;
 const here = Astro.url.pathname;
 
 const nav = [
   { href: '/katalog/', label: 'Каталог', num: '02' },
   { href: '/uslugi/', label: 'Услуги', num: '04' },
-  ...(hasWorks ? [{ href: '/nashi-raboty/', label: 'Работы', num: '06' }] : []),
+  { href: '/works/', label: 'Наши работы', num: '06' },
   { href: '/#intro', label: 'О салоне', num: '01' },
   { href: '/kontakty/', label: 'Контакты', num: '05' },
 ];

@@ -8,6 +8,8 @@ const works = defineCollection({
   schema: z.object({
     title: z.string(),
     date: z.coerce.date(),
+    // Порядок в галерее: меньше — выше. Без номера работа идёт после пронумерованных, новые — первыми
+    order: z.number().int().optional(),
     place: z.string().optional(),
     summary: z.string().optional(),
     photos: z.array(z.object({ image: z.string(), alt: z.string(), caption: z.string().optional() })).min(1),
