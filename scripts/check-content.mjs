@@ -1,6 +1,6 @@
 // Проверки содержимого:
 //  1) каталог сайта содержит все позиции из списка владельца, без потерь и дублей;
-//  2) контакты в документах (и в собранном сайте при --dist) совпадают с src/data/site.mjs;
+//  2) контакты в catalog.md (и в собранном сайте при --dist) совпадают с src/data/site.mjs;
 //  3) в собранном сайте нет устаревшего адреса, мессенджеров, цен и форм.
 import { readFileSync, readdirSync, statSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
@@ -45,9 +45,9 @@ for (const c of categories) {
   if (dup.length) errors.push(`${c.slug}: повторяются якоря ${dup.join(', ')}`);
 }
 
-// 2. Контакты в документах
+// 2. Контакты в документах. brief.md намеренно не в Git (приватный бриф владельца), поэтому не проверяется
 const mustContain = [salon.address.street, salon.hours.opens, salon.hours.closes, salon.email, ...salon.phones.map((p) => p.display)];
-for (const doc of ['brief.md', 'catalog.md']) {
+for (const doc of ['catalog.md']) {
   const p = join(root, doc);
   if (!existsSync(p)) { errors.push(`Нет файла ${doc}`); continue; }
   const text = readFileSync(p, 'utf8');
