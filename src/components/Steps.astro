@@ -1,0 +1,7 @@
+---
+interface Props { steps: { title: string; text: string }[]; label?: string }
+const { steps, label = 'Как проходит заказ' } = Astro.props;
+---
+<ol class="steps" role="list" aria-label={label}>
+  {steps.map((s, i) => <li><span class="tnum">{String(i + 1).padStart(2, '0')}</span><b>{s.title}</b>{s.text}</li>)}
+</ol>

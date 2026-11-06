@@ -1,0 +1,65 @@
+---
+// Карта салона: MapLibre + векторные тайлы OpenFreeMap (бесплатно, без ключа, коммерческое использование разрешено).
+// Подпись «OpenFreeMap © OpenMapTiles, данные © OpenStreetMap» — обязательная, MapLibre ставит её сам.
+import { salon } from '../data/site.mjs';
+const { lat, lng } = salon.geo;
+---
+<div class="map">
+  <div class="map__canvas" data-map data-lat={lat} data-lng={lng} role="region" aria-label={`Карта: салон, ${salon.address.street}`}></div>
+  <p class="map__routes">
+    <a href={salon.maps.route} target="_blank" rel="noopener">Маршрут в Яндекс Картах</a>
+    <a href={salon.maps.google} target="_blank" rel="noopener">Маршрут в Google Картах</a>
+  </p>
+</div>
+
+<script>
+  // Палитра «Выпуска» поверх стиля Positron: молочная земля, светлые дороги, приглушённая вода и парки
+  const tint: [RegExp, string, string][] = [
+    [/^background$/, 'background-color', '#ECE6DA'],
+    [/water/, 'fill-color', '#D3DAD3'],
+    [/park|landcover|landuse_(wood|grass)/, 'fill-color', '#E2E0D1'],
+    [/building/, 'fill-color', '#E3DBCC'],
+    [/highway|road|street|bridge|tunnel/, 'line-color', '#FBF8F2'],
+  ];
+
+  for (const el of document.querySelectorAll<HTMLElement>('[data-map]')) {
+    new IntersectionObserver(async ([e], obs) => {
+      if (!e.isIntersecting) return;
+      obs.disconnect();
+      const [{ Map, Marker, setWorkerUrl }, { default: workerUrl }] = await Promise.all([
+        import('maplibre-gl'),
+        // MapLibre 6 рисует тайлы в отдельном самодостаточном воркере — отдаём его как обычный файл сборки
+        import('maplibre-gl/dist/maplibre-gl-worker.mjs?url'),
+        import('maplibre-gl/dist/maplibre-gl.css'),
+      ]);
+      setWorkerUrl(workerUrl);
+      const at: [number, number] = [Number(el.dataset.lng), Number(el.dataset.lat)];
+      const map = new Map({
+        container: el,
+        style: 'https://tiles.openfreemap.org/styles/positron',
+        center: at,
+        zoom: 15,
+        cooperativeGestures: true, // страница прокручивается как обычно, карта — двумя пальцами или с Ctrl/⌘
+        attributionControl: { compact: false },
+        locale: {
+          'CooperativeGesturesHandler.WindowsHelpText': 'Чтобы изменить масштаб, прокручивайте с зажатой клавишей Ctrl',
+          'CooperativeGesturesHandler.MacHelpText': 'Чтобы изменить масштаб, прокручивайте с зажатой клавишей ⌘',
+          'CooperativeGesturesHandler.MobileHelpText': 'Двигайте карту двумя пальцами',
+          'NavigationControl.ZoomIn': 'Приблизить',
+          'NavigationControl.ZoomOut': 'Отдалить',
+        },
+      });
+      map.on('load', () => {
+        for (const layer of map.getStyle().layers) {
+          for (const [re, prop, color] of tint) {
+            if (re.test(layer.id) && prop.startsWith(layer.type)) map.setPaintProperty(layer.id, prop, color);
+          }
+        }
+      });
+      const pin = document.createElement('div');
+      pin.className = 'pin';
+      pin.setAttribute('aria-label', 'Салон «Текстиль Дизайн»');
+      new Marker({ element: pin }).setLngLat(at).addTo(map);
+    }, { rootMargin: '600px 0px' }).observe(el);
+  }
+</script>

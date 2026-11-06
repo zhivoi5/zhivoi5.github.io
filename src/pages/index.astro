@@ -1,279 +1,164 @@
 ---
+// Главная «Выпуск» — перенос утверждённого прототипа (prototype/index.html) один в один.
+// Тексты — src/content/pages/home.json, каталог и контакты — из общих данных.
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
 import Base from '../layouts/Base.astro';
-import Art from '../components/Art.astro';
-import Icon from '../components/Icon.astro';
-import LiftDiagram from '../components/LiftDiagram.astro';
-import Contacts from '../components/Contacts.astro';
-import { productCategories, categoryBySlug } from '../data/catalog.mjs';
+import Photo from '../components/Photo.astro';
+import Toc from '../components/Toc.astro';
+import Steps from '../components/Steps.astro';
+import Terms from '../components/Terms.astro';
+import Colophon from '../components/Colophon.astro';
+import { categories, categoryBySlug } from '../data/catalog.mjs';
+import { readJson } from '../data/content.mjs';
 import { salon } from '../data/site.mjs';
-import { positions } from '../data/plural.mjs';
 
+const t = readJson('pages/home.json');
 const main = salon.phones[0];
 const services = categoryBySlug['uslugi'];
-const count = (c) => c.groups.reduce((n, g) => n + g.items.length, 0);
-// Для превью — характерные позиции раздела.
-const productTotal = productCategories.reduce((n, c) => n + count(c), 0);
-const preview = (c) => c.groups.flatMap((g) => g.items).filter((i) => i.name !== c.title).slice(0, 4);
-
-const steps = [
-  { t: 'Консультация', d: 'Обсуждаем задачу по телефону или в салоне: какие окна, какой стиль, что важно — свет, уют, практичность.' },
-  { t: 'Выезд дизайнера на замер', d: 'Дизайнер привозит образцы тканей и делает точные замеры окон.' },
-  { t: 'Дизайн и подбор', d: 'Подбираем ткани, карнизы и конструкцию. При необходимости — визуализация и дизайн-проект штор.' },
-  { t: 'Пошив', d: 'Шторы и тюль шьются индивидуально, точно под размер вашего окна.' },
-  { t: 'Монтаж и навеска', d: 'Монтируем карнизы и системы, навешиваем и отпариваем шторы.' },
-];
+const tkani = categoryBySlug['tkani'];
+const tkaniNum = String(categories.indexOf(tkani) + 1).padStart(2, '0');
+// Живые шторы: ролик подключается, только если файлы уже лежат в public/media/
+const video = ['hero-loop.webm', 'hero-loop.mp4'].filter((f) => existsSync(join(process.cwd(), 'public', 'media', f)));
+const accent = (text: string, word: string) => text.replace(word, `<i>${word}</i>`);
 ---
-<Base
-  title="Салон штор «Текстиль Дизайн» в Коммунарке — шторы, тюль и карнизы на заказ"
-  description="Салон штор в Коммунарке: пошив штор и тюля, римские и рулонные шторы, жалюзи, карнизы и лифт-системы. Выезд дизайнера с образцами тканей. Ежедневно 12:00–20:00."
->
-  <!-- Первый экран -->
-  <section class="hero" aria-labelledby="hero-title">
-    <div class="container hero__grid">
-      <div class="hero__text">
-        <p class="label">Салон штор и дизайна · Коммунарка</p>
-        <h1 id="hero-title" class="hero__title">Шторы, сшитые <em>для вашего</em> окна</h1>
-        <p class="lead">Индивидуальный пошив штор, тюля и римских штор, карнизы, жалюзи и домашний текстиль. Дизайнер приезжает с образцами тканей и делает точные замеры.</p>
-        <div class="hero__actions">
-          <a class="btn" href={`tel:${main.tel}`}><Icon name="phone" /> Позвонить <span class="tnum">{main.display}</span></a>
-          <a class="link" href="#katalog">Смотреть каталог <Icon name="arrow" /></a>
-        </div>
-        <ul role="list" class="hero__facts small">
-          <li><Icon name="clock" size={18} /> {salon.hours.text}</li>
-          <li><Icon name="pin" size={18} /> {salon.address.street}</li>
-          <li><Icon name="calendar" size={18} /> {salon.installment}</li>
-        </ul>
-      </div>
-      <div class="hero__art" data-hero-art>
-        <Art type="hero" class="hero__svg" />
+<Base title={t.seo.title} description={t.seo.description} overlay>
+
+<!-- 00 — Обложка -->
+<section class="cover" id="top" data-folio="00" data-name="Обложка" aria-labelledby="h1">
+  <Photo class="cover__img" src={t.hero.image} alt={t.hero.imageAlt} widths={[900, 1600, 2400]} sizes="100vw" loading="eager" fetchpriority="high" />
+  {video.length > 0 && (
+    <video class="cover__video" muted loop playsinline preload="none" aria-hidden="true"
+      data-src-webm={video.includes('hero-loop.webm') ? '/media/hero-loop.webm' : undefined}
+      data-src-mp4={video.includes('hero-loop.mp4') ? '/media/hero-loop.mp4' : undefined}></video>
+  )}
+  <div class="cover__shade" aria-hidden="true"></div>
+  {video.length > 0 && <button class="cover__pause" type="button" aria-pressed="false">Пауза</button>}
+
+  <p class="cover__mast" aria-hidden="true"><span>Текстиль</span><span><i>Дизайн</i></span></p>
+
+  <div class="cover__foot">
+    <ul class="perks" role="list" aria-label="Преимущества салона">
+      {t.hero.perks.map((p: { title: string; text: string }) => <li>{p.title}<small>{p.text}</small></li>)}
+    </ul>
+    <div class="cover__lead">
+      <h1 id="h1">{t.hero.title}</h1>
+      <p>{t.hero.lead}</p>
+      <div class="cover__actions">
+        <a class="btn btn--ivory" href={`tel:${main.tel}`}>Позвонить в салон</a>
+        <a class="btn btn--ghost-light" href="#catalog">Каталог <span aria-hidden="true">↓</span></a>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- Каталог -->
-  <section class="section katalog" id="katalog" aria-labelledby="katalog-title">
-    <div class="container">
-      <div class="section-head">
-        <p class="label">Каталог</p>
-        <h2 id="katalog-title">Всё для оформления окна и дома</h2>
-        <p class="lead">{productCategories.length} направлений и {positions(productTotal)} — от тюля-вуали до электрокарнизов. Выберите раздел, чтобы увидеть всё, с чем работает салон.</p>
-      </div>
-      <ol role="list" class="index">
-        {productCategories.map((c, i) => (
-          <li class="index__row" data-reveal style={`--i:${i % 4}`}>
-            <a class="index__link" href={c.path}>
-              <span class="index__num tnum" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
-              <span class="index__art"><Art type={c.art} plain /></span>
-              <span class="index__body">
-                <span class="index__title">{c.title}</span>
-                <span class="index__short">{c.short}</span>
-              </span>
-              <span class="index__meta small">{positions(count(c))}</span>
-              <span class="index__arrow" aria-hidden="true"><Icon name="arrow" /></span>
-            </a>
-            <ul role="list" class="index__chips">
-              {preview(c).map((it) => <li><a href={`${c.path}#${it.id}`}>{it.name}</a></li>)}
-            </ul>
-          </li>
-        ))}
-      </ol>
-    </div>
-  </section>
+<!-- 01 — Вступление: кадр заходит на обложку и связывает экраны -->
+<section class="intro" id="intro" data-folio="01" data-name="Вступление" aria-labelledby="intro-title">
+  <figure class="intro__fig">
+    <Photo src={t.intro.image} alt={t.intro.imageAlt} widths={[600, 900, 1200]} sizes="(min-width: 900px) 34vw, 78vw" ratio={[4, 5]} />
+    {t.intro.caption && <figcaption>{t.intro.caption}</figcaption>}
+  </figure>
 
-  <!-- Лифт-системы -->
-  <section class="section on-dark lift-block" aria-labelledby="lift-title">
-    <div class="container lift-block__grid">
-      <div class="lift-block__text">
-        <p class="label">Для высоких потолков</p>
-        <h2 id="lift-title">Лифт-система: шторы <em>спускаются</em> к вам</h2>
-        <p class="lead">Карниз вместе со шторами опускается на тросах — их можно снять для чистки или повесить обратно, не поднимаясь на высоту. Решение для окон в два света, лестничных пролётов и потолков, до которых обычным способом не добраться.</p>
-        <ol role="list" class="lift-steps">
-          <li><span class="tnum">01</span> Карниз со шторами плавно опускается на тросах</li>
-          <li><span class="tnum">02</span> Шторы снимают или вешают на удобной высоте</li>
-          <li><span class="tnum">03</span> Конструкция поднимается обратно под потолок</li>
-        </ol>
-        <p class="small muted">Это не подъёмный механизм римской шторы: здесь вниз опускается весь карниз целиком.</p>
-        <a class="link" href="/karnizy/lift-sistemy/">Подробнее о лифт-системах <Icon name="arrow" /></a>
-      </div>
-      <LiftDiagram />
-    </div>
-  </section>
+  <div class="intro__text">
+    <p class="label"><span class="tnum">01</span> — Вступление</p>
+    <h2 id="intro-title" class="visually-hidden">О салоне</h2>
+    <blockquote class="quote">
+      <p set:html={accent(t.intro.quote, t.intro.quoteAccent)} />
+    </blockquote>
+    <p class="intro__body">{t.intro.body}</p>
+  </div>
+</section>
 
-  <!-- Услуги -->
-  <section class="section" aria-labelledby="uslugi-title">
-    <div class="container">
-      <div class="section-head">
-        <p class="label">Услуги</p>
-        <h2 id="uslugi-title">От первой консультации до ухода за шторами</h2>
-        <p class="lead">Можно заказать всё «под ключ» или только то, что нужно: замер, монтаж карниза, подшив или химчистку.</p>
-      </div>
-      <div class="services">
-        {services.groups.map((g, gi) => (
-          <div class="services__col" data-reveal style={`--i:${gi}`}>
-            <h3 class="services__title">{g.title}</h3>
-            <ul role="list">
-              {g.items.map((it) => (
-                <li><a href={`${services.path}#${it.id}`}>{it.name}<Icon name="arrow" size={16} /></a></li>
-              ))}
-            </ul>
-          </div>
-        ))}
-      </div>
-      <a class="link services__more" href={services.path}>Все услуги с описанием <Icon name="arrow" /></a>
-    </div>
-  </section>
+<!-- 02 — Каталог-оглавление -->
+<section class="index" id="catalog" data-folio="02" data-name="Каталог" aria-labelledby="index-title">
+  <header class="index__head">
+    <p class="label"><span class="tnum">02</span> — Каталог</p>
+    <h2 id="index-title">{t.catalog.title} <i>{t.catalog.titleAccent}</i></h2>
+  </header>
+  <Toc sections={categories} />
+</section>
 
-  <!-- Как проходит заказ -->
-  <section class="section section--alt" aria-labelledby="process-title">
-    <div class="container">
-      <div class="section-head">
-        <p class="label">Как проходит заказ</p>
-        <h2 id="process-title">Пять шагов к готовому окну</h2>
-      </div>
-      <ol role="list" class="process">
-        {steps.map((s, i) => (
-          <li class="process__step" data-reveal style={`--i:${i}`}>
-            <span class="process__num tnum" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
-            <h3 class="process__title">{s.t}</h3>
-            <p class="muted">{s.d}</p>
-          </li>
-        ))}
-      </ol>
-    </div>
-  </section>
+<!-- 03 — Материал: макро ткани во весь экран + «этикетка образца» -->
+<section class="material" id="material" data-folio="03" data-name="Материал" aria-labelledby="material-title">
+  <Photo class="material__img" src={t.material.image} alt={t.material.imageAlt} widths={[1000, 1600, 2400]} sizes="100vw" />
+  <div class="material__shade" aria-hidden="true"></div>
+  <div class="material__inner">
+    <p class="label label--gold"><span class="tnum">03</span> — Материал</p>
+    <h2 id="material-title" class="material__title">{t.material.title}<br><i>{t.material.titleAccent}</i></h2>
+    <p class="material__body">{t.material.body}</p>
+  </div>
+  <aside class="swatch" aria-label={`Раздел каталога: ${tkani.title.toLowerCase()}`}>
+    <p class="swatch__code tnum">Т-{tkaniNum}</p>
+    <p class="swatch__title">{tkani.title}</p>
+    <ul role="list">
+      {tkani.groups.flatMap((g: any) => g.items).map((i: any) => <li>{i.name}</li>)}
+    </ul>
+    <a class="link" href={tkani.path}>Раздел «Ткани» <span aria-hidden="true">→</span></a>
+  </aside>
+</section>
 
-  <!-- Условия -->
-  <section class="section conditions" aria-labelledby="cond-title">
-    <div class="container conditions__grid">
-      <div class="section-head">
-        <p class="label">Условия</p>
-        <h2 id="cond-title">Удобно выбрать и оплатить</h2>
-      </div>
-      <ul role="list" class="conditions__list">
-        <li><Icon name="calendar" size={32} /><div><h3 class="conditions__t">{salon.installment}</h3><p class="muted">Заказ можно оплачивать частями в течение полугода. Условия уточняйте в салоне.</p></div></li>
-        <li><Icon name="card" size={32} /><div><h3 class="conditions__t">Карта, наличные или QR-код</h3><p class="muted">Выберите удобный способ оплаты.</p></div></li>
-        <li><Icon name="swatch" size={32} /><div><h3 class="conditions__t">Образцы тканей на выезде</h3><p class="muted">Дизайнер привозит образцы, чтобы ткань можно было оценить при свете вашего окна.</p></div></li>
-      </ul>
-    </div>
-  </section>
+<!-- 04 — Ателье: услуги, этапы и условия -->
+<section class="atelier" id="services" data-folio="04" data-name="Ателье" aria-labelledby="atelier-title">
+  <figure class="atelier__fig">
+    <Photo src={t.atelier.image} alt={t.atelier.imageAlt} widths={[600, 900, 1200]} sizes="(min-width: 900px) 40vw, 100vw" ratio={[11, 14]} />
+    {t.atelier.caption && <figcaption>{t.atelier.caption}</figcaption>}
+  </figure>
 
-  <Contacts />
+  <div class="atelier__text">
+    <p class="label"><span class="tnum">04</span> — Ателье</p>
+    <h2 id="atelier-title">{t.atelier.title} <i>{t.atelier.titleAccent}</i></h2>
+
+    <a class="feature" href="/uslugi/vyezd-dizajnera/">
+      <span class="feature__kicker">Начните с этого</span>
+      <span class="feature__title">Выезд дизайнера на замер</span>
+      <span class="feature__text">{t.atelier.featureText}</span>
+      <span class="feature__arrow" aria-hidden="true">→</span>
+    </a>
+
+    <dl class="groups">
+      {services.groups.map((g: any) => (
+        <div><dt>{g.title}</dt><dd>{g.items.map((i: any) => i.name).join(' · ')}</dd></div>
+      ))}
+    </dl>
+    <a class="link" href={services.path}>Все услуги <span aria-hidden="true">→</span></a>
+  </div>
+
+  <Steps steps={t.atelier.steps} />
+  <Terms />
+</section>
+
+<!-- 05 — Контакты и карта -->
+<Colophon />
+
 </Base>
 
 <script>
-  // Шторы на первом экране «раздвигаются» один раз после загрузки.
-  const art = document.querySelector('[data-hero-art] .art--hero');
-  if (art) requestAnimationFrame(() => setTimeout(() => art.classList.add('is-open'), 250));
+  // Живые шторы: только широкий экран, без «уменьшить движение» и без экономии трафика.
+  // На телефоне остаётся постер — он же первая отрисовка (LCP) на любом устройстве.
+  const video = document.querySelector<HTMLVideoElement>('.cover__video');
+  const pause = document.querySelector<HTMLButtonElement>('.cover__pause');
+  const cover = document.querySelector('.cover')!;
+  const wantsVideo = matchMedia('(min-width: 900px) and (prefers-reduced-motion: no-preference)').matches
+    && !(navigator as any).connection?.saveData;
+  if (video && pause && wantsVideo) {
+    for (const [attr, type] of [['srcWebm', 'video/webm'], ['srcMp4', 'video/mp4']]) {
+      if (!video.dataset[attr]) continue;
+      const s = document.createElement('source');
+      s.src = video.dataset[attr]!; s.type = type;
+      video.append(s);
+    }
+    video.addEventListener('playing', () => { video.classList.add('is-playing'); pause.classList.add('is-on'); }, { once: true });
+    video.load();
+    // Не тратим ресурсы, когда обложка вне экрана
+    new IntersectionObserver(([e]) => {
+      if (pause.getAttribute('aria-pressed') === 'true') return;
+      e.isIntersecting ? video.play().catch(() => {}) : video.pause();
+    }).observe(cover);
+    pause.addEventListener('click', () => {
+      const paused = pause.getAttribute('aria-pressed') === 'true';
+      pause.setAttribute('aria-pressed', String(!paused));
+      pause.textContent = paused ? 'Пауза' : 'Продолжить';
+      paused ? video.play() : video.pause();
+    });
+  }
 </script>
-
-<style>
-  /* Первый экран */
-  .hero { padding-block: var(--space-4) var(--space-8); overflow: hidden; }
-  .hero__grid { display: grid; gap: var(--space-6); align-items: center; }
-  .hero__text { display: grid; gap: var(--space-5); align-content: center; order: 2; }
-  .hero__title { font-size: var(--fs-display); line-height: 1.04; }
-  .hero__title em { color: var(--color-primary); }
-  .hero__actions { display: grid; gap: var(--space-4); justify-items: start; margin-top: var(--space-2); }
-  .hero__actions .btn { width: 100%; }
-  .hero__facts { display: flex; flex-wrap: wrap; gap: var(--space-3) var(--space-5); padding-top: var(--space-5); border-top: 1px solid var(--color-line); color: var(--color-text-muted); }
-  .hero__facts li { display: inline-flex; align-items: center; gap: var(--space-2); }
-  .hero__facts svg { color: var(--color-text-accent); }
-  .hero__art { order: 1; width: min(60%, 15rem); justify-self: center; }
-  @media (min-width: 600px) and (max-width: 1023px) { .hero__art { width: min(50%, 18rem); } }
-  .hero__art :global(.art) { filter: drop-shadow(0 24px 40px rgb(12 42 32 / 0.12)); }
-  @media (min-width: 600px) {
-    .hero__actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-5); }
-    .hero__actions .btn { width: auto; }
-  }
-  @media (min-width: 1024px) {
-    .hero { padding-block: var(--space-7) var(--space-9); }
-    .hero__grid { grid-template-columns: 7fr 5fr; gap: var(--space-9); min-height: min(calc(100svh - var(--header-h) - 6rem), 46rem); }
-    .hero__text { order: 1; }
-    .hero__art { order: 2; width: 100%; max-width: 30rem; }
-  }
-
-  /* Каталог — редакционный указатель */
-  .index { border-top: 1px solid var(--color-line); }
-  .index__row { border-bottom: 1px solid var(--color-line); padding-block: var(--space-5); display: grid; gap: var(--space-3); }
-  .index__link {
-    display: grid; grid-template-columns: 4.5rem 1fr auto; grid-template-areas: 'art body arrow' 'art meta arrow';
-    gap: 0.25rem var(--space-4); align-items: center; text-decoration: none;
-  }
-  .index__num { display: none; }
-  .index__art { grid-area: art; width: 4.5rem; border-radius: var(--radius-sm); overflow: hidden; }
-  .index__art :global(.art) { transition: transform var(--dur-zoom) var(--ease-out); }
-  .index__body { grid-area: body; display: grid; gap: 0.25rem; }
-  .index__title { font-family: var(--font-display); font-size: var(--fs-h3); font-weight: 600; line-height: 1.15; transition: color var(--dur-fast); }
-  .index__short { display: none; color: var(--color-text-muted); font-size: var(--fs-small); line-height: 1.5; }
-  .index__meta { grid-area: meta; color: var(--color-text-accent); font-weight: 600; }
-  .index__arrow { grid-area: arrow; display: grid; place-items: center; width: 44px; height: 44px; border: 1px solid var(--color-line); border-radius: 50%; color: var(--color-primary); transition: background-color var(--dur-base), color var(--dur-base), border-color var(--dur-base); }
-  .index__link:hover .index__title { color: var(--color-primary); }
-  .index__link:hover .index__arrow { background: var(--color-primary); color: var(--color-on-primary); border-color: var(--color-primary); }
-  .index__link:hover .index__art :global(.art) { transform: scale(1.06); }
-  .index__chips { display: flex; flex-wrap: wrap; gap: var(--space-2); padding-left: calc(4.5rem + var(--space-4)); }
-  .index__chips a {
-    display: inline-flex; align-items: center; min-height: 2.25rem; padding: 0.25rem 0.75rem;
-    border: 1px solid var(--color-line); border-radius: var(--radius-xs);
-    font-size: 0.8125rem; text-decoration: none; color: var(--color-text-muted);
-    transition: border-color var(--dur-fast), color var(--dur-fast);
-  }
-  .index__chips a:hover { border-color: var(--color-primary); color: var(--color-primary); }
-  @media (max-width: 599px) { .index__chips { padding-left: 0; } }
-  @media (min-width: 768px) {
-    .index__link { grid-template-columns: 3rem 6.5rem 1fr auto auto; grid-template-areas: 'num art body meta arrow'; gap: var(--space-5); }
-    .index__num { display: block; grid-area: num; font-family: var(--font-display); font-size: 1.5rem; color: var(--color-text-accent); }
-    .index__art { width: 6.5rem; }
-    .index__short { display: block; }
-    .index__chips { padding-left: calc(3rem + 6.5rem + var(--space-5) * 2); }
-  }
-
-  /* Лифт-системы */
-  .lift-block__grid { display: grid; gap: var(--space-7); align-items: center; }
-  .lift-block__text { display: grid; gap: var(--space-5); justify-items: start; }
-  .lift-block h2 em { color: var(--color-accent-on-dark); }
-  .lift-steps { display: grid; gap: var(--space-3); width: 100%; }
-  .lift-steps li { display: flex; gap: var(--space-4); padding-block: var(--space-3); border-top: 1px solid var(--color-line-on-dark); }
-  .lift-steps span { font-family: var(--font-display); font-size: 1.25rem; color: var(--color-accent-on-dark); min-width: 2rem; line-height: 1.3; }
-  @media (min-width: 1024px) { .lift-block__grid { grid-template-columns: 7fr 5fr; gap: var(--space-9); } }
-
-  /* Услуги */
-  .services { display: grid; gap: var(--space-7); }
-  .services__title { font-size: var(--fs-h3); padding-bottom: var(--space-4); border-bottom: 1px solid var(--color-hairline-gold); margin-bottom: var(--space-2); }
-  .services__col a {
-    display: flex; justify-content: space-between; align-items: center; gap: var(--space-3);
-    padding-block: 0.8rem; border-bottom: 1px solid var(--color-line);
-    text-decoration: none; transition: color var(--dur-fast), padding var(--dur-base) var(--ease-out);
-  }
-  .services__col a :global(svg) { color: var(--color-line-strong); flex: none; transition: color var(--dur-fast), transform var(--dur-base) var(--ease-out); }
-  .services__col a:hover { color: var(--color-primary); }
-  .services__col a:hover :global(svg) { color: var(--color-primary); transform: translateX(4px); }
-  .services__more { margin-top: var(--space-6); }
-  @media (min-width: 1024px) { .services { grid-template-columns: repeat(3, 1fr); gap: var(--space-7); } }
-
-  /* Процесс */
-  .process { display: grid; gap: 0; counter-reset: step; }
-  .process__step { position: relative; display: grid; gap: var(--space-2); padding: 0 0 var(--space-6) 4rem; }
-  .process__step::before { content: ''; position: absolute; left: 1.25rem; top: 2.75rem; bottom: 0; width: 1px; background: var(--color-hairline-gold); }
-  .process__step:last-child::before { display: none; }
-  .process__num {
-    position: absolute; left: 0; top: 0;
-    display: grid; place-items: center; width: 2.5rem; height: 2.5rem;
-    border: 1px solid var(--color-hairline-gold); border-radius: 50%;
-    font-family: var(--font-display); font-size: 1.125rem; color: var(--color-text-accent); background: var(--color-bg-alt);
-  }
-  .process__title { font-family: var(--font-body); font-size: var(--fs-h4); font-weight: 600; line-height: 1.35; padding-top: 0.45rem; }
-  @media (min-width: 1024px) {
-    .process { grid-template-columns: repeat(5, 1fr); gap: var(--space-5); }
-    .process__step { padding: 4rem 0 0; }
-    .process__step::before { left: 2.75rem; right: calc(-1 * var(--space-5)); top: 1.25rem; bottom: auto; width: auto; height: 1px; }
-  }
-
-  /* Условия */
-  .conditions__grid { display: grid; gap: var(--space-5); }
-  .conditions__list { display: grid; gap: var(--space-5); }
-  .conditions__list li { display: flex; gap: var(--space-4); align-items: flex-start; padding-top: var(--space-5); border-top: 1px solid var(--color-line); }
-  .conditions__list :global(svg) { color: var(--color-primary); flex: none; }
-  .conditions__t { font-family: var(--font-body); font-size: var(--fs-h4); font-weight: 600; line-height: 1.35; margin-bottom: 0.25rem; }
-  @media (min-width: 768px) { .conditions__list { grid-template-columns: 1fr 1fr; gap: var(--space-6); } }
-  @media (min-width: 1024px) { .conditions__grid { grid-template-columns: 4fr 8fr; gap: var(--space-9); } .conditions__list { grid-template-columns: repeat(3, 1fr); } }
-</style>

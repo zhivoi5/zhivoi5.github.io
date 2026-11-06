@@ -1,0 +1,10 @@
+---
+// Условия оплаты — отдельным блоком, чтобы рассрочка не читалась как этап работы.
+import { salon } from '../data/site.mjs';
+const [first, ...rest] = salon.payment.map((p) => p.replace('банковская карта', 'банковской картой').replace('наличные', 'наличными').replace('QR-код', 'по QR-коду'));
+const list = rest.length ? `${[first, ...rest.slice(0, -1)].join(', ')} или ${rest.at(-1)}` : first;
+---
+<div class="terms">
+  <p class="terms__title">Оплата и условия</p>
+  <p>{list.charAt(0).toUpperCase() + list.slice(1)}. Доступна <strong>{salon.installment.toLowerCase()}</strong>.</p>
+</div>

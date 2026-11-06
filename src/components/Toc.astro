@@ -1,0 +1,45 @@
+---
+// Каталог-оглавление: строки разделов антиквой и превью раздела при наведении/фокусе (на широком экране).
+import Photo from './Photo.astro';
+
+interface Section { slug: string; path: string; title: string; short: string; image: string }
+interface Props { sections: Section[]; startAt?: number }
+const { sections, startAt = 1 } = Astro.props;
+const num = (i: number) => String(i + startAt).padStart(2, '0');
+---
+<div class="index__body" data-toc>
+  <ol class="toc" role="list">
+    {sections.map((c, i) => (
+      <li><a href={c.path} data-i={i}>
+        <Photo class="toc__thumb" src={c.image} alt="" widths={[160]} sizes="64px" ratio={[4, 5]} />
+        <span class="toc__num tnum">{num(i)}</span>
+        <span class="toc__main"><span class="toc__title">{c.title}</span><span class="toc__desc">{c.short}</span></span>
+        <span class="toc__go" aria-hidden="true">→</span>
+      </a></li>
+    ))}
+  </ol>
+
+  <div class="preview" aria-hidden="true">
+    <div class="preview__frame">
+      {sections.map((c, i) => (
+        <Photo class={i === 0 ? 'is-on' : undefined} src={c.image} alt="" widths={[600, 900]} sizes="30vw" ratio={[4, 5]} />
+      ))}
+    </div>
+    <p class="preview__cap" data-preview-name>{sections[0]?.title}</p>
+  </div>
+</div>
+
+<script>
+  for (const toc of document.querySelectorAll('[data-toc]')) {
+    const frames = [...toc.querySelectorAll('.preview__frame img, .preview__frame [data-placeholder]')];
+    const cap = toc.querySelector('[data-preview-name]')!;
+    toc.querySelectorAll<HTMLAnchorElement>('.toc a').forEach((a) => {
+      const show = () => {
+        frames.forEach((f, j) => f.classList.toggle('is-on', j === Number(a.dataset.i)));
+        cap.textContent = a.querySelector('.toc__title')!.textContent;
+      };
+      a.addEventListener('mouseenter', show);
+      a.addEventListener('focus', show);
+    });
+  }
+</script>

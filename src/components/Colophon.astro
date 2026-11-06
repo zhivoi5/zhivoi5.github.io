@@ -1,0 +1,28 @@
+---
+// «Контакты» — финал главной и страницы контактов; на остальных страницах тот же блок без карты.
+import { salon } from '../data/site.mjs';
+import MapView from './MapView.astro';
+
+interface Props { folio?: string; level?: 'h1' | 'h2'; map?: boolean }
+const { folio = '05', level = 'h2', map = true } = Astro.props;
+const Heading = level;
+const [street, house] = salon.address.street.split(/,\s*(?=[^,]+$)/);
+---
+<section class="colophon" id="contacts" data-folio={folio} data-name="Контакты" data-hide-bar aria-labelledby="contacts-title">
+  <div class="colophon__text">
+    <p class="label label--gold"><span class="tnum">{folio}</span> — Контакты</p>
+    <Heading id="contacts-title" class="colophon__addr"><span class="colophon__city">{salon.address.city}, {salon.address.district.replace('район ', '')}</span>{street}, <i>{house}</i></Heading>
+    <dl class="passport">
+      {salon.phones.map((p, i) => (
+        <div><dt>{i === 0 ? 'Салон' : p.label}</dt><dd><a class="tnum" href={`tel:${p.tel}`}>{p.display}</a></dd></div>
+      ))}
+      <div><dt>Почта</dt><dd><a href={`mailto:${salon.email}`}>{salon.email}</a></dd></div>
+      <div><dt>Часы</dt><dd>Ежедневно <span class="nw">{salon.hours.opens}–{salon.hours.closes}</span></dd></div>
+    </dl>
+    <div class="colophon__actions">
+      <a class="btn btn--gold" href={`tel:${salon.phones[0].tel}`}>Позвонить в салон</a>
+      <a class="btn btn--ghost-light" href={salon.maps.route} target="_blank" rel="noopener">Построить маршрут</a>
+    </div>
+  </div>
+  {map && <MapView />}
+</section>

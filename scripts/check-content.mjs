@@ -11,28 +11,34 @@ import { sourceList } from './source-list.mjs';
 const errors = [];
 const root = new URL('..', import.meta.url).pathname;
 
-// 1. Каталог
-const titleBySection = {
-  'Услуги': 'Услуги',
-  'Шторы на заказ': 'Шторы на заказ',
-  'Карнизы и системы для штор': 'Карнизы и системы для штор',
-  'Рулонные шторы': 'Рулонные шторы',
-  'Ткани для штор': 'Ткани для штор',
-  'Тюль': 'Тюль',
-  'Римские шторы': 'Римские шторы',
-  'Домашний текстиль и декор': 'Домашний текстиль и декор',
-  'Жалюзи и плиссе': 'Жалюзи и плиссе',
+// 1. Каталог. Ассортимент теперь правит владелец в CMS, поэтому расхождения
+// с исходным списком от 05.11.2026 — предупреждения, а не ошибки сборки.
+const warnings = [];
+const slugBySection = {
+  'Услуги': 'uslugi',
+  'Шторы на заказ': 'shtory-na-zakaz',
+  'Карнизы и системы для штор': 'karnizy',
+  'Рулонные шторы': 'rulonnye-shtory',
+  'Ткани для штор': 'tkani',
+  'Тюль': 'tyul',
+  'Римские шторы': 'rimskie-shtory',
+  'Домашний текстиль и декор': 'tekstil-i-dekor',
+  'Жалюзи и плиссе': 'zhalyuzi-i-plisse',
 };
 let sourceTotal = 0;
 for (const [section, names] of Object.entries(sourceList)) {
   sourceTotal += names.length;
-  const cat = categories.find((c) => c.title === titleBySection[section]);
-  if (!cat) { errors.push(`Нет раздела «${section}»`); continue; }
+  const cat = categories.find((c) => c.slug === slugBySection[section]);
+  if (!cat) { warnings.push(`Нет раздела «${section}»`); continue; }
   const siteNames = cat.groups.flatMap((g) => g.items.map((i) => i.name));
-  for (const n of names) if (!siteNames.includes(n)) errors.push(`«${section}»: нет позиции «${n}»`);
-  for (const n of siteNames) if (!names.includes(n)) errors.push(`«${section}»: лишняя позиция «${n}»`);
+  for (const n of names) if (!siteNames.includes(n)) warnings.push(`«${section}»: нет позиции «${n}»`);
+  for (const n of siteNames) if (!names.includes(n)) warnings.push(`«${section}»: новая позиция «${n}»`);
 }
-if (allItems.length !== sourceTotal) errors.push(`Позиций на сайте ${allItems.length}, в списке владельца ${sourceTotal}`);
+for (const c of categories) {
+  for (const i of c.groups.flatMap((g) => g.items)) {
+    if (!/^[a-z0-9-]+$/.test(i.id)) errors.push(`${c.slug}: якорь «${i.id}» должен быть латиницей через дефис`);
+  }
+}
 for (const c of categories) {
   const ids = c.groups.flatMap((g) => g.items.map((i) => i.id));
   const dup = ids.filter((id, i) => ids.indexOf(id) !== i);
@@ -76,8 +82,9 @@ if (process.argv.includes('--dist')) {
   console.log(`Проверено HTML-страниц: ${html.length}`);
 }
 
+if (warnings.length) console.warn('Каталог отличается от исходного списка владельца:\n- ' + warnings.join('\n- '));
 if (errors.length) {
   console.error('Ошибки проверки:\n- ' + errors.join('\n- '));
   process.exit(1);
 }
-console.log(`Каталог: ${allItems.length} позиций из ${sourceTotal} — всё на месте. Контакты согласованы.`);
+console.log(`Каталог: ${allItems.length} позиций${warnings.length ? '' : ` — совпадает с исходным списком (${sourceTotal})`}. Контакты согласованы.`);

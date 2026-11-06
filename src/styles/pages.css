@@ -1,0 +1,153 @@
+/* Внутренние страницы «Выпуска»: те же токены, сетка 12 колонок, антиква и тонкие линии, что на главной. */
+
+/* Шапка на внутренних страницах всегда молочная, поэтому контент начинается под ней */
+.page { padding-top: var(--hdr); }
+
+/* ---------- Хлебные крошки ---------- */
+.crumbs ol { display: flex; flex-wrap: wrap; gap: 4px 8px; font-size: 13px; color: var(--graphite-muted); }
+.crumbs li + li::before { content: '/'; margin-right: 8px; color: var(--line); color: rgba(41, 40, 36, 0.3); }
+.crumbs a { text-decoration: none; }
+.crumbs a:hover { text-decoration: underline; text-decoration-color: var(--gold); text-underline-offset: 4px; }
+
+/* ---------- Разворот: заголовок страницы + кадр ---------- */
+.spread { display: grid; gap: 40px; padding: 28px var(--gutter) 80px; }
+.spread__text { display: grid; gap: 22px; align-content: end; }
+.spread__title { font: 400 clamp(3rem, 1.4rem + 6.4vw, 8.5rem)/0.9 var(--serif); letter-spacing: -0.02em; text-wrap: balance; }
+.spread__title i { color: var(--gold-ink); }
+.spread__lead { max-width: 36rem; font-size: 18px; color: var(--graphite-muted); }
+.spread__actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.spread__fig img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; }
+@media (max-width: 599px) { .spread__actions .btn { flex: 1 1 100%; } }
+@media (min-width: 900px) {
+  .spread { grid-template-columns: repeat(12, 1fr); column-gap: 24px; padding-top: 40px; padding-bottom: 120px; }
+  .spread__text { grid-column: 1 / span 7; padding-bottom: 8px; }
+  .spread__fig { grid-column: 9 / span 4; margin-right: calc(-1 * var(--gutter)); } /* кадр уходит к краю экрана */
+  .spread--plain .spread__text { grid-column: 1 / span 10; }
+}
+
+/* ---------- Оглавление групп внутри раздела ---------- */
+.anchors { display: flex; flex-wrap: wrap; gap: 10px 28px; padding: 18px var(--gutter); border-block: 1px solid var(--line); background: var(--milk-light); }
+.anchors a { font-size: 14px; font-weight: 600; text-decoration: none; color: var(--graphite-muted); }
+.anchors a:hover { color: var(--emerald); }
+.anchors span { margin-right: 6px; color: var(--gold-ink); }
+
+/* ---------- Рубрика: заголовок слева, содержание справа ---------- */
+.rubric { display: grid; gap: 28px; padding: 72px var(--gutter); border-top: 1px solid var(--line); }
+.rubric:first-of-type { border-top: 0; }
+.rubric__head { display: grid; gap: 14px; align-content: start; }
+.rubric__head h2 { font-size: clamp(2rem, 1rem + 3vw, 3.5rem); }
+.rubric__head h2 i { color: var(--gold-ink); }
+.rubric__note { max-width: 26rem; font-size: 15px; color: var(--graphite-muted); }
+@media (min-width: 900px) {
+  .rubric { grid-template-columns: repeat(12, 1fr); column-gap: 24px; padding-block: 112px; }
+  .rubric__head { grid-column: 1 / span 4; position: sticky; top: calc(var(--hdr) + 32px); align-self: start; }
+  .rubric__body { grid-column: 6 / span 7; }
+}
+
+/* ---------- Позиции каталога ---------- */
+.entries { border-bottom: 1px solid var(--line); }
+.entries li { display: grid; gap: 6px; padding: 22px 0; border-top: 1px solid var(--line); scroll-margin-top: calc(var(--hdr) + 24px); transition: background-color 0.4s var(--ease), padding 0.4s var(--ease); }
+.entries h3 { font: 400 clamp(1.5rem, 1.05rem + 1.2vw, 2.125rem)/1.15 var(--serif); }
+.entries p { max-width: 40rem; font-size: 16px; color: var(--graphite-muted); }
+/* Переход по якорю из каталога или поиска: позиция мягко подсвечивается */
+.entries li:target { background: var(--milk-deep); padding-inline: 16px; }
+
+/* ---------- Нумерованный список (подготовка, шаги) ---------- */
+.numbered { border-bottom: 1px solid var(--line); }
+.numbered li { display: grid; grid-template-columns: 3.25rem 1fr; gap: 6px 12px; padding: 22px 0; border-top: 1px solid var(--line); }
+.numbered li > span { grid-row: span 2; font: 400 2rem/1 var(--serif); color: var(--gold-ink); }
+.numbered b { font-weight: 600; }
+.numbered p { color: var(--graphite-muted); }
+
+/* ---------- Изумрудная полоса с кадром (лифт-системы, подборки) ---------- */
+.band { display: grid; background: var(--emerald); color: var(--milk); }
+.band__fig img { width: 100%; height: 100%; min-height: 360px; aspect-ratio: 4 / 3; object-fit: cover; }
+.band__text { display: grid; gap: 20px; align-content: center; padding: 56px var(--gutter); }
+.band__text h2 i { color: var(--gold); }
+.band__text p { max-width: 32rem; color: var(--champagne); }
+.band .link { color: var(--milk); }
+.band :focus-visible { outline-color: var(--gold); }
+@media (min-width: 900px) {
+  .band { grid-template-columns: 7fr 5fr; }
+  .band__fig img { aspect-ratio: auto; min-height: 620px; }
+  .band__text { padding: 96px var(--gutter) 96px 56px; }
+}
+
+/* ---------- Сравнение (блэкаут / Dimout) ---------- */
+.compare { display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line); }
+.compare article { display: grid; gap: 16px; align-content: start; padding: 32px 28px; background: var(--milk); }
+.compare article:first-child { background: var(--emerald); color: var(--milk); }
+.compare article:first-child .label { color: var(--gold); }
+.compare h3 { font: 400 clamp(1.75rem, 1.2rem + 1.5vw, 2.5rem)/1.1 var(--serif); }
+.compare li { position: relative; padding: 8px 0 8px 22px; border-top: 1px solid currentColor; border-color: rgba(127, 127, 127, 0.2); }
+.compare li::before { content: ''; position: absolute; left: 0; top: 1.15em; width: 10px; height: 1px; background: var(--gold); }
+@media (min-width: 900px) { .compare { grid-template-columns: 1fr 1fr; } }
+
+/* ---------- Ссылки-указатели (внутри рубрик) ---------- */
+.pointers { border-bottom: 1px solid var(--line); }
+.pointers a { display: flex; justify-content: space-between; gap: 16px; padding: 16px 0; border-top: 1px solid var(--line); text-decoration: none; font-weight: 500; }
+.pointers a span { color: var(--gold-ink); transition: transform 0.3s var(--ease); }
+.pointers a:hover { color: var(--emerald); }
+.pointers a:hover span { transform: translateX(6px); }
+
+/* ---------- Три тезиса в ряд (выезд, ткани) ---------- */
+.theses { display: grid; gap: 0; border-top: 1px solid var(--line); }
+.theses li { display: grid; gap: 8px; padding: 28px 0; border-bottom: 1px solid var(--line); }
+.theses h3 { font: 400 clamp(1.5rem, 1.1rem + 1vw, 2rem)/1.15 var(--serif); }
+.theses p { color: var(--graphite-muted); max-width: 30rem; }
+@media (min-width: 900px) {
+  .theses { grid-template-columns: repeat(3, 1fr); border-bottom: 1px solid var(--line); }
+  .theses li { padding: 32px 28px 32px 0; border-bottom: 0; }
+  .theses li + li { padding-left: 28px; border-left: 1px solid var(--line); }
+}
+
+/* ---------- Звонок дизайнеру ---------- */
+.call { display: grid; gap: 20px; padding: 56px var(--gutter); background: var(--milk-deep); }
+.call h2 { font-size: clamp(2rem, 1rem + 3vw, 3.5rem); }
+.call p { max-width: 34rem; color: var(--graphite-muted); }
+.call__actions { display: flex; flex-wrap: wrap; gap: 10px; }
+@media (max-width: 599px) { .call__actions .btn { flex: 1 1 100%; } }
+@media (min-width: 900px) {
+  .call { grid-template-columns: repeat(12, 1fr); column-gap: 24px; align-items: end; padding-block: 96px; }
+  .call > div:first-child { grid-column: 1 / span 7; display: grid; gap: 16px; }
+  .call__actions { grid-column: 9 / span 4; justify-content: flex-end; }
+}
+
+/* ---------- Наши работы ---------- */
+.works { display: grid; }
+.work { display: grid; gap: 28px; padding: 64px var(--gutter); border-top: 1px solid var(--line); }
+.work__head { display: grid; gap: 12px; align-content: start; }
+.work__head h2 { font-size: clamp(2rem, 1rem + 3vw, 3.75rem); }
+.work__meta { font-size: 14px; color: var(--graphite-muted); }
+.work__text { max-width: 30rem; color: var(--graphite-muted); }
+.work__tags { display: flex; flex-wrap: wrap; gap: 8px 18px; }
+.work__photos { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.work__photos button { display: block; width: 100%; padding: 0; border: 0; background: var(--milk-deep); cursor: zoom-in; }
+.work__photos button:first-child { grid-column: 1 / -1; }
+.work__photos img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; transition: opacity 0.3s var(--ease); }
+.work__photos button:first-child img { aspect-ratio: 4 / 3; }
+.work__photos button:hover img { opacity: 0.88; }
+@media (min-width: 900px) {
+  .work { grid-template-columns: repeat(12, 1fr); column-gap: 24px; padding-block: 112px; }
+  .work__head { grid-column: 1 / span 4; position: sticky; top: calc(var(--hdr) + 32px); align-self: start; }
+  .work__photos { grid-column: 6 / span 7; }
+  .work:nth-child(even) .work__head { grid-column: 9 / span 4; grid-row: 1; }
+  .work:nth-child(even) .work__photos { grid-column: 1 / span 7; grid-row: 1; }
+}
+.notice { display: grid; gap: 12px; margin: 0 var(--gutter) 96px; padding: 40px 32px; background: var(--milk-deep); }
+.notice h2 { font-size: clamp(1.75rem, 1rem + 2vw, 2.75rem); }
+.notice p { max-width: 36rem; color: var(--graphite-muted); }
+
+/* Просмотр фото на весь экран */
+.lightbox { width: 100%; max-width: none; height: 100dvh; max-height: none; margin: 0; padding: 0; border: 0; background: rgba(14, 24, 20, 0.96); color: var(--milk); }
+.lightbox[open] { display: grid; grid-template-rows: auto 1fr auto; }
+.lightbox::backdrop { background: rgba(14, 24, 20, 0.6); }
+.lightbox__top, .lightbox__bottom { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px var(--gutter); }
+.lightbox__stage { display: grid; place-items: center; min-height: 0; padding: 0 var(--gutter); }
+.lightbox__stage img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.lightbox__cap { font-size: 14px; color: var(--champagne); }
+.lightbox__count { font-size: 13px; color: var(--sage); }
+.lightbox__nav { display: flex; gap: 10px; }
+
+/* ---------- Страница 404 ---------- */
+.nf__list { display: flex; flex-wrap: wrap; gap: 10px 28px; }

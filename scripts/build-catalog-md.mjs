@@ -1,4 +1,4 @@
-// Генерирует catalog.md из src/data/catalog.mjs, чтобы документ и сайт не расходились.
+// Генерирует catalog.md из src/content/catalog/*.json, чтобы документ и сайт не расходились.
 import { writeFileSync } from 'node:fs';
 import { categories, featurePages } from '../src/data/catalog.mjs';
 import { salon } from '../src/data/site.mjs';
@@ -7,8 +7,8 @@ const total = categories.reduce((n, c) => n + c.groups.reduce((m, g) => m + g.it
 const lines = [
   '# Каталог салона «Текстиль Дизайн»',
   '',
-  '> Файл генерируется командой `npm run catalog` из `src/data/catalog.mjs`.',
-  '> Чтобы изменить каталог, правьте `src/data/catalog.mjs`, затем перегенерируйте этот файл.',
+  '> Файл генерируется командой `npm run catalog` из `src/content/catalog/*.json`.',
+  '> Каталог редактируется в CMS (раздел «Каталог») или в этих JSON-файлах; затем перегенерируйте этот файл.',
   '',
   `Всего позиций: **${total}** в ${categories.length} разделах. Все позиции — реальные услуги и товары салона (список владельца от 05.11.2026).`,
   '',
