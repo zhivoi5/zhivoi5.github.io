@@ -12,13 +12,14 @@ h3 { margin: 0; }
 
 /* ---------- Разворот: заголовок страницы + кадр ---------- */
 .spread { display: grid; gap: 40px; padding: 28px var(--gutter) 80px; }
-.spread__text { display: grid; gap: 22px; align-content: end; }
+.spread__text { display: grid; gap: 22px; align-content: end; min-width: 0; }
 .spread__title { font: 400 clamp(3rem, 1.4rem + 6.4vw, 8.5rem)/0.9 var(--serif); letter-spacing: -0.02em; text-wrap: balance; }
 .spread__title i { color: var(--gold-ink); }
 .spread__lead { max-width: 36rem; font-size: 18px; color: var(--graphite-muted); }
 .spread__actions { display: flex; flex-wrap: wrap; gap: 10px; }
 .spread__fig img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; }
-@media (max-width: 599px) { .spread__actions .btn { flex: 1 1 100%; } }
+/* Длинные кнопки с телефоном переносятся на узких экранах, а не растягивают страницу */
+@media (max-width: 599px) { .spread__actions .btn, .call__actions .btn { flex: 1 1 100%; white-space: normal; text-align: center; padding-block: 12px; } }
 @media (min-width: 900px) {
   .spread { grid-template-columns: repeat(12, 1fr); column-gap: 24px; padding-top: 40px; padding-bottom: 120px; }
   .spread__text { grid-column: 1 / span 7; padding-bottom: 8px; }
